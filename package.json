@@ -1,0 +1,39 @@
+{
+  "name": "wfh-bot",
+  "version": "1.0.0",
+  "description": "A slack bot that integrates with google calendar to help communicate when people are working from home.",
+  "main": "N/A",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "googleapis": "^39.2.0",
+    "moment-timezone": "^0.5.26"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.493.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "env-yaml": "^0.1.2",
+    "mocha": "^6.2.0",
+    "serverless": "^1.47.0",
+    "serverless-dynamodb-local": "^0.2.38",
+    "serverless-offline": "^5.7.3",
+    "serverless-pseudo-parameters": "^2.4.0",
+    "util": "^0.12.1",
+    "uuidv4": "^4.0.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/_mocha test/**/*.js -t 10000",
+    "test-controller": "./node_modules/.bin/_mocha test/integration/controller.integration.js -t 10000",
+    "test-calendar": "./node_modules/.bin/_mocha test/integration/calendar.integration.js -t 10000",
+    "test-handlers": "./node_modules/.bin/_mocha test/integration/handlers.integration.js -t 10000",
+    "test-slack": "./node_modules/.bin/_mocha test/integration/slack.integration.js -t 10000",
+    "test-aws": "./node_modules/.bin/_mocha test/unit/awsController.unit.js -t 10000",
+    "generate-google-token": "node generateGoogleToken.js"
+  },
+  "author": "stp.staley@gmail.com",
+  "license": "ISC"
+}

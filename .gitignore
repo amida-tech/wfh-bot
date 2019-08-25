@@ -1,0 +1,19 @@
+#osx
+.DS_Store
+
+#node_modules
+node_modules
+
+#env variables
+serverless.env.yml
+serverless.env-test.yml
+
+#google creds
+credentials.json
+
+#Examples still contain some sensitive information
+examples/*
+
+#google auth token
+token.json
+
