@@ -6,8 +6,7 @@ const wfhListenerHandler = require('../../handlers/wfhListener').index;
 const dailyWFHMessageHandler = require('../../handlers/postDailyWFHMessage').index;
 const controller = require('../../controller');
 const slack = require('../../util/slack');
-x
-const { setUpTablesAndCalendar, deleteTables} = require('../test-helper');
+const { setUpTablesAndCalendar, deleteTables, clearEventsOneDay } = require('../test-helper');
 
 chai.use(chaiAsPromised);
 
@@ -98,7 +97,13 @@ describe('WFH Listener', async () => {
   });
 
   it('Removes wfh event if exists in calendar', async () => {
-    await controller.addToWFHCal(testUserId);
+    try{
+      await controller.addToWFHCal(testUserId);
+    } catch(err){
+      // There might be an event from a previous test. 
+      // If not, make one.
+    } 
+    
     slackReactionHouse.event.type = 'reactionRemoved'
     let event = {
       body: JSON.stringify(slackReactionHouse)
@@ -110,12 +115,12 @@ describe('WFH Listener', async () => {
     expect(hasWFHEventBool).to.be.false;
   });
 
-  it('throws 500 if message does not exist', async () => {
-    slackReactionHouse.event.item.timeStamp = '1234567';
+  it('throws 400 if message does not exist', async () => {
+    slackReactionHouse.event.item.ts = '1234567';
     let event = {
       body: JSON.stringify(slackReactionHouse)
     }
     let wfhListenerResponse = await wfhListenerHandler(event);
-    expect(wfhListenerResponse.statusCode).to.equal(500);
+    expect(wfhListenerResponse.statusCode).to.equal(400);
   });
 });

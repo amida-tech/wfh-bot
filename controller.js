@@ -150,36 +150,33 @@ const removeFromWFHCal = async (slackId, date) => {
   const { start } = date ? getStartAndEndOfDateDate(date) : getStartAndEndOfTodayDate()
 
   try {
-    //First check if they're on the calendar for the specified date
     const { email } = await getInfoBySlackId(slackId);  
-    let item = await awsController.dynamodb.getItem({
-      TableName: wfhTable,
-      Key: {
-        START_DATE: {S: start },
-        EMAIL: {S: email },
+  
+    let events = await listEvents(gCalIdWFH, date);
+    let userEvents = events.filter(event => {
+      if(event.attendees) {
+        let hasAttendee = event.attendees.some(attendee => {
+          return attendee.email == email
+        });
+        return hasAttendee;
       }
+      return false;
     });
-
-    if(item) {
-      const eventId = get(item, 'CAL_EVENT_ID.S');
-      await removeFromCal({calendarId: gCalIdWFH, eventId});
-      await awsController.dynamodb.deleteItem({
-        TableName: wfhTable,
-        Key: {
-          START_DATE: {S: start },
-          EMAIL: {S: email },
-        }
-      });
-
+    let removals = await Promise.all(userEvents.map( async event => {
+      let eventId = event.id;
+      if(eventId) {
+        return await removeFromCal({calendarId: gCalIdWFH, eventId});
+      }
+    }));
+    if(removals.every(removal => !!removal)){
       return true;
     } else {
-      console.error({
-        msg: 'No event to delete for slack user',
-        slackId,
-        email
+      throw new Error({
+        msg: "not all removals were a success",
+        data: removals
       })
     }
-
+    
   } catch(err) {
     console.error(err);
     throw new Error(err);

@@ -46,5 +46,5 @@ const setUpTablesAndCalendar = async () => {
 module.exports = {
   setUpTablesAndCalendar,
   deleteTables,
-  // createNEvents
+  clearEventsOneDay
 }

@@ -32,7 +32,7 @@ module.exports.index = async (event, context) => {
       const messageExists = await controller.wfhMessageExists(itemUser, timestamp);
 
       if(!messageExists) {
-        response.status = 400;
+        response.statusCode = 400;
         response.message = 'Message item is not from WFH slack bot';
         return response;
       }
@@ -43,13 +43,15 @@ module.exports.index = async (event, context) => {
         } catch(err) {
           response.statusCode = 400
           response.message = 'Failed to add slack user ' + slackId;
+          response.error = err
         }
       } else if(wfhRemoved) {
         try {
           await controller.removeFromWFHCal(slackId);
         } catch(err) {
           response.statusCode = 400
-          response.message = 'Failed to add slack user ' + slackId;
+          response.message = 'Failed to remove slack user ' + slackId;
+          response.error = err;
         }
       } else {
         response.statusCode = 400;
