@@ -57,8 +57,9 @@ const getInfoBySlackId = async slackId => {
 
 const postMessage = async (channel, msg, asUser) => {
   let url = `${slackAPIURL}/chat.postMessage?token=${token}&channel=${channel}&text=${msg}`;
+    
   if(asUser) {
-    url = url +  `&as_user=${asUser}`
+    url = url + `&as_user=${asUser}`
   }
   try {
     

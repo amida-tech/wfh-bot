@@ -1,19 +1,21 @@
 'use strict';
-
-const controller = require('../controller')
+const controller = require('./controller');
 const get = require('lodash/get');
 const houseReaction = '"house"';
 const reactionAddedEvent = 'reactionAdded';
 const reactionRemovedEvent = 'reactionRemoved';
 
-module.exports.index = async (event, context) => {
+module.exports.handler = async (event, context) => {
   let response = {
-    statusCode: 200
+    statusCode: 200,
+    headers: { 
+      'Content-Type': 'application/json'
+    },
+    isBase64Encoded: false
   };
   try {
-
     const body = JSON.parse(event.body);
-    const challenge = get(body, 'challenge');
+    const challenge = get(event, 'challenge');
     const eventType = get(body, 'event.type');
     const correctEventType = 
       (eventType == 'reactionAdded' || eventType === 'reactionRemoved') 
@@ -21,7 +23,9 @@ module.exports.index = async (event, context) => {
 
     if(challenge) {
       response.body = JSON.stringify({ challenge });
-    } if(correctEventType) {
+      return response;
+    }
+    if(correctEventType) {
       const slackId = get(body, 'event.user');
       const itemUser = get(body, 'event.item_user');
       const timestamp = get(body, 'event.item.ts');
@@ -33,7 +37,9 @@ module.exports.index = async (event, context) => {
 
       if(!messageExists) {
         response.statusCode = 400;
-        response.message = 'Message item is not from WFH slack bot';
+        response.body = JSON.stringify({
+          message: 'Message item is not from WFH slack bot'
+        });
         return response;
       }
 
@@ -42,30 +48,38 @@ module.exports.index = async (event, context) => {
           await controller.addToWFHCal(slackId);
         } catch(err) {
           response.statusCode = 400
-          response.message = 'Failed to add slack user ' + slackId;
-          response.error = err
+          response.body = JSON.stringify({
+            message: 'Failed to add slack user ' + slackId
+          });
         }
       } else if(wfhRemoved) {
         try {
           await controller.removeFromWFHCal(slackId);
         } catch(err) {
           response.statusCode = 400
-          response.message = 'Failed to remove slack user ' + slackId;
-          response.error = err;
+          response.body = JSON.stringify({
+            message: 'Failed to remove slack user ' + slackId
+          });
         }
       } else {
         response.statusCode = 400;
-        response.message = 'Reaction is not a supported WFH event';
+        response.body = JSON.stringify({
+          message: 'Reaction is not a supported WFH event'
+        });
       }
       
     } else {
       response.statusCode = 400;
-      response.message = "Unsupported event type"
+      response.body = JSON.stringify({
+        message: 'Unsupported event type'
+      });
     }
   } catch(err) { 
     console.error(err); 
     response.statusCode = 500
-    response.message = "Internal server error."
+    response.body = JSON.stringify({
+      message: 'Internal server error.'
+    });
   } 
 
   return response;

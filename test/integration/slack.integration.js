@@ -1,6 +1,6 @@
 require('env-yaml').config({path: __dirname + '/../serverless.env-test.yml'});
 
-const { getInfoBySlackId, postMessage, getSlackIdByEmail } = require('../../util/slack');
+const { getInfoBySlackId, postMessage, getSlackIdByEmail } = require('../../opt/slack');
 
 const chai = require('chai');
 const { expect } = chai;

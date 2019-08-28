@@ -4,8 +4,6 @@ const getAuth = require('./authorize');
 const {
   getStartAndEndOfDateDateTime,
   getStartAndEndOfTodayDateTime,
-  getStartAndEndOfDateDate,
-  getStartAndEndOfTodayDate,
   validateDate
 } = require('../time');
 

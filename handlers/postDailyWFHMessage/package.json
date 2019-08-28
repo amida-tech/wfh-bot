@@ -1,0 +1,15 @@
+{
+  "name": "post-daily-wfh-message-lambda",
+  "version": "1.0.0",
+  "description": "Lambda posts daily WFH message",
+  "main": "postDailyMessage.index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "path": "^0.12.7",
+    "uuidv4": "^4.0.0"
+  }
+}

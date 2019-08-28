@@ -1,0 +1,3 @@
+{
+  "body": "{\"token\":\"wsFpqyTVB0e8RVNAe5RFzrXC\",\"team_id\":\"T02APFZ6C\",\"api_app_id\":\"AKZ6D16H2\",\"event\":{\"type\":\"reaction_added\",\"user\":\"U4ATB52N6\",\"item\":{\"type\":\"message\",\"channel\":\"C3431GJP9\",\"ts\":\"1564154225.014400\"},\"reaction\":\"office\",\"item_user\":\"ULD1JVA0L\",\"event_ts\":\"1564349141.015400\"},\"type\":\"event_callback\",\"event_id\":\"EvLW9JA2EB\",\"event_time\":1564349141,\"authed_users\":[\"U4ATB52N6\"]}"
+}

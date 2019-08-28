@@ -11,9 +11,8 @@ serverless.env-test.yml
 #google creds
 credentials.json
 
-#Examples still contain some sensitive information
-examples/*
-
 #google auth token
 token.json
 
+#node modules
+node_modules

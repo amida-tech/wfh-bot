@@ -1,9 +1,30 @@
-##Setup First cp serverless.env.example.yml serverless.env.yml cp serverless.env.example.yml test/serverless.env-test.yml
+# Setup 
+ 
+1) Download dependencies
+```npm i```
+```npm i -g serverless```
 
-visit this link: https://developers.google.com/calendar/quickstart/nodejs and click "endable google calendar"
+2) copy config files
+```cp serverless.env.example.yml serverless.env.yml```
+```cp test/serverless.env-test.example.yml test/serverless.env-test.yml```
 
-Once you download the credentials.json, place the values into the corresponding values in both the serverless.env.yml and serverless.env-test.yml files (an automated script for that part would be hepful)
+3) Configure google authentication information (this part is depressingly manual)
+- visit this link: https://developers.google.com/calendar/quickstart/nodejs and click "enable google calendar"
 
-then, run npm run generate-google-token and follow the instructions
+- click "Download Client Configuration"
+
+- Once you download the credentials.json, copy the Client ID, secret, and projectId/quickstartId into both the serverless.env.yml and serverless.env-test.yml files (an automated script for that part would be hepful)
+
+- then, 
+  run ```npm run generate-google-token``` 
+  go to the link provided and enter the code into the command prompt.
+
 
 Then you can get the rest of the environment variables including the slack bot's token and slack id from one pass.
+
+## Setting up the slack bot via Slack App
+
+
+
+## AWS Roles and permissions
+

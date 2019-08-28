@@ -1,11 +1,11 @@
 require('env-yaml').config({path: __dirname + '/../serverless.env-test.yml'});
-const { getStartAndEndOfTodayDate } = require('../../util/time');
+const { getStartAndEndOfTodayDate } = require('../../opt/time');
 const has = require('lodash/has');
 
 const chai = require('chai');
 const { expect } = chai;
 
-const { addToCal, removeFromCal, listEvents } = require('../../util/google/calendar');
+const { addToCal, removeFromCal } = require('../../opt/google/calendar');
 
 const testCalId = process.env.WFH_GCAL_ID;
 const {start, end} = getStartAndEndOfTodayDate();

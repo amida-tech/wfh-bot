@@ -1,0 +1,22 @@
+{
+  "name": "wfh-bot-lambda-layer",
+  "version": "1.0.0",
+  "description": "wfh bot lambda layer",
+  "main": "N/A",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "googleapis": "^39.2.0",
+    "http-signature": "^1.2.0",
+    "moment-timezone": "^0.5.26",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.493.0"
+  },
+  "author": "stp.staley@gmail.com",
+  "license": "ISC"
+}

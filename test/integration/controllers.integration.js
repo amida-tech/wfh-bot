@@ -1,28 +1,26 @@
 require('env-yaml').config({path: __dirname + '/../serverless.env-test.yml'});
 
 const range = require('lodash/range');
-const some = require('lodash/some');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { messagesTableSchema, wfhTableSchema } = require('../../util/tableSchema');
-const { setUpTablesAndCalendar, deleteTables } = require('../test-helper');
+const { messagesTableSchema } = require('../../local_util/tableSchema');
+const { setUpTablesAndCalendar, deleteTables, clearEventsOneDay} = require('../test-helper');
 
 const { 
   addToWFHCal,
   removeFromWFHCal,
-  clearEventsOneDay,
   wfhMessageExists,
   hasWFHEvent
-} = require('../../controller');
-const { addToCal, listEvents, updateEvent } = require('../../util/google/calendar');
+} = require('../../handlers/wfhListener/controller');
+//TODO: write tests for daily message controller
+const { addToCal, listEvents } = require('../../opt/google/calendar');
 
-const AWSController = require('../../util/aws/controller');
+const AWSController = require('../../opt/aws/controller');
 
 const {
-  getStartAndEndOfDateDate,
   getStartAndEndOfTodayDate,
   getStartAndEndOfTodayDateTime
-} = require('../../util/time');
+} = require('../../opt/time');
 
 const awsController = new AWSController({
   dynamodb: {
@@ -45,6 +43,7 @@ describe('Controller' , async () => {
     try{
       await setUpTablesAndCalendar();
     } catch(err){
+      console.log(err)
     }
   });
 
@@ -126,20 +125,15 @@ describe('Controller' , async () => {
   it('Removes WFH event in calendar/table for given day if event exists' , async () => {
     await addToWFHCal(slackUserId);
     await removeFromWFHCal(slackUserId); 
-    const itemRes = await awsController.dynamodb.getItem({
-      TableName: wfhTableSchema.TableName,
-      Key: {
-        START_DATE: {S: start },
-        EMAIL: {S: slackUserEmail },
-      }
-    });
-    expect(itemRes).to.be.undefined;
+    let res = await hasWFHEvent({slackUserEmail});
+    expect(res).to.be.false;
   })
 
   it('wfhExists responds true when message exists with correct user, channel, timestamp', async () => {
     let timeStamp = '122345';
     let itemUser = 'ABCDE';
-    awsController.dynamodb.putItem({
+    
+    await awsController.dynamodb.putItem({
       TableName: messagesTableSchema.TableName,
       Item: {
         ITEM_USER: {S: itemUser},
@@ -147,7 +141,6 @@ describe('Controller' , async () => {
       }
     });
 
-    //TODO: Finish this test
     let res = await wfhMessageExists(itemUser, timeStamp);
 
     expect(res).to.be.true;

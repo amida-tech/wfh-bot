@@ -40,10 +40,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "controllerIntegration",
+      "name": "controllersIntegration",
       "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
       "args": [
-        "test/integration/controller.integration.js"
+        "test/integration/controllers.integration.js"
       ]
     },
     {

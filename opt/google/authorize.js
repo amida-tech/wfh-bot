@@ -1,7 +1,7 @@
 const { google } = require('googleapis');
 const readline = require('readline');
 const fs = require('fs');
-
+const path = require('path');
 
 // NOTE: For now we can hard-code the scopes. If we ever have
 // multiple APIs this will need to be passed in from each.
@@ -34,7 +34,7 @@ const assembleCredentials = () => ({
     "token_uri": process.env.GOOGLE_TOKEN_URI,
     "auth_provider_x509_cert_url": process.env.GOOGLE_AUTH_PROVIDER_X509_CERT_URL,
     "client_secret": process.env.GOOGLE_CLIENT_SECRET,
-    "redirect_uris": process.env.GOOGLE_REDIRECT_URIS.split(',')
+    "redirect_uris": [ process.env.GOOGLE_REDIRECT_URIS_1, process.env.GOOGLE_REDIRECT_URIS_2]
   }
 })
 
@@ -95,7 +95,7 @@ const authorize = (credentials, callback) => {
 }
 const getAuth  = () => {
   let credentials;
-  if(fs.existsSync(__dirname + 'credentials.json')) {
+  if(fs.existsSync(path.join(__dirname,'credentials.json'))) {
     let credentialsString = fs.readFileSync(__dirname + 'credentials.json');
     if(credentialsString) {
       credentials= JSON.parse(credentialsString);

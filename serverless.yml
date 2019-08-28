@@ -1,14 +1,10 @@
 service: slack-listener 
 
-package:
-  exclude:
-    - test/*
-
 custom:
   dynamodb:
   # If you only want to use DynamoDB Local in some stages, declare them here
     stages:
-      - dev
+      - local
     start:
       port: 8000
       inMemory: true
@@ -20,61 +16,106 @@ custom:
     # Uncomment only if you already have a DynamoDB running locally
       noStart: true
 
+plugins:
+  - serverless-offline
+  - serverless-pseudo-parameters
+  - serverless-dynamodb-local
+
 provider:
   name: aws
   runtime: nodejs8.10
-  profile: cloudformation_role
-  role: arn:aws:iam::844297601570:role/SlackLambdaRole
-  region: ${file(./serverless.env.yml):WFH_TABLE}
+  # profile: cloudformation_role
+  # role: arn:aws:iam::844297601570:role/SlackLambdaRole
+  region: ${file(./serverless.env.yml):REGION}
+  stage: ${file(./serverless.env.yml):STAGE}
   environment:
-    AWS_REGION: ${self:provider.region}
-    STAGE: 'dev'
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
     GOOGLE_CLIENT_ID: ${file(./serverless.env.yml):GOOGLE_CLIENT_ID}
     GOOGLE_PROJECT_ID: ${file(./serverless.env.yml):GOOGLE_PROJECT_ID}
     GOOGLE_AUTH_URI: ${file(./serverless.env.yml):GOOGLE_AUTH_URI}
     GOOGLE_TOKEN_URI: ${file(./serverless.env.yml):GOOGLE_TOKEN_URI}
     GOOGLE_AUTH_PROVIDER_X509_CERT_URL: ${file(./serverless.env.yml):GOOGLE_AUTH_PROVIDER_X509_CERT_URL}
     GOOGLE_CLIENT_SECRET: ${file(./serverless.env.yml):GOOGLE_CLIENT_SECRET}
-    GOOGLE_REDIRECT_URIS: ${file(./serverless.env.yml):GOOGLE_REDIRECT_URIS}
-    TRAVEL_GCAL_ID: ${file(./serverless.env.yml):TRAVEL_GCAL_ID}
+    GOOGLE_REDIRECT_URIS_1: ${file(./serverless.env.yml):GOOGLE_REDIRECT_URIS_1}
+    GOOGLE_REDIRECT_URIS_2: ${file(./serverless.env.yml):GOOGLE_REDIRECT_URIS_2}
     WFH_GCAL_ID: ${file(./serverless.env.yml):WFH_GCAL_ID}
     SLACK_WFH_CHANNEL: ${file(./serverless.env.yml):SLACK_WFH_CHANNEL}
     WFH_BOT_SLACK_ID: ${file(./serverless.env.yml):WFH_BOT_SLACK_ID}
-plugins:
-  - serverless-offline
-  - serverless-pseudo-parameters
-  - serverless-dynamodb-local
+    MESSAGES_TABLE: ${file(./serverless.env.yml):MESSAGES_TABLE}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: 
+        - "dynamodb:PutItem"
+      Resource: arn:aws:dynamodb:${file(./serverless.env.yml):REGION}:#{AWS::AccountId}:table/${file(./serverless.env.yml):MESSAGES_TABLE}
+    - Effect: "Allow"
+      Action: 
+        - "dynamodb:GetItem"
+      Resource: arn:aws:dynamodb:${file(./serverless.env.yml):REGION}:#{AWS::AccountId}:table/${file(./serverless.env.yml):MESSAGES_TABLE}
+
+package:
+  individually: true
+
 functions:
   wfhListener:
-    handler: handlers/wfhListener.index
+    handler: handlers/wfhListener/index.handler
     events:
       - http:
           path: /wfh-listener
           method: post
-    WFH_TABLE: ${file(./serverless.env.yml):WFH_TABLE}
-    IN_OFFICE_TABLE: ${file(./serverless.env.yml):IN_OFFICE_TABLE}
-    LOCAL_DYNAMO_ENDPOINT: ${file(./serverless.env.yml):LOCAL_DYNAMO_ENDPOINT}
-  getEvents:
-    handler: handlers/getEvents.index
-    events:
-      - http: get /gcal
-      
-resources:
-  MessagesTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: ${file(./serverless.env.yml):MESSAGES_TABLE}
-      AttributeDefinitions:
-        - AttributeName: DATETIME
-          AttributeType: S
-        - AttributeName: CHANNEL
-          AttributeType: S
-      KeySchema:
-        - AttributeName: DATETIME
-          KeyType: HASH
-        - AttributeName: CHANNEL
-          KeyType: RANGE
-      # Set the capacity to auto-scale
-      BillingMode: PROVISIONED
-
+    package:
+      individually: true
+      exclude:
+        - '**'
+        - "**/**/package-lock.json"
+        - "**/**/package.json"
+      include:
+        - handlers/wfhListener/**
+    environment:
+      LOCAL_DYNAMO_ENDPOINT: ${file(./serverless.env.yml):LOCAL_DYNAMODB_ENDPOINT}
+    layers:
+      - { Ref: UtilLambdaLayer }
     
+  postDailyMessage:
+    handler: handlers/postDailyWFHMessage/index.handler
+    events:
+      - http: get /postMessage
+    package:
+      individually: true
+      exclude:
+        - '**'
+      include:
+        - handlers/postDailyWFHMessage/**
+    environment:
+      SLACK_BOT_API_TOKEN: ${file(./serverless.env.yml):SLACK_BOT_API_TOKEN}
+    layers:
+      - { Ref: UtilLambdaLayer }
+
+resources:
+  Resources:
+    MessagesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${file(./serverless.env.yml):MESSAGES_TABLE}
+        AttributeDefinitions:
+          - 
+            AttributeName: TIMESTAMP
+            AttributeType: S
+          - 
+            AttributeName: ITEM_USER
+            AttributeType: S
+        KeySchema:
+          - 
+            AttributeName: ITEM_USER
+            KeyType: HASH
+          - 
+            AttributeName: TIMESTAMP
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+layers:
+  Util:
+    path: opt
+    allowedAccounts:
+      - '*' # ALL accounts!
+    retain: false

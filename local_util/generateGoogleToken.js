@@ -6,6 +6,6 @@ require('env-yaml').config({path: __dirname + '/serverless.env.yml'});
    function (or any google api) initiates the quickstart 
    process if it hasn't yet been completed*/
  
-let getAuth = require('./util/google/authorize');
+let getAuth = require('./opt/google/authorize');
 
 getAuth()

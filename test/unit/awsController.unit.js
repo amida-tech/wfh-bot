@@ -1,7 +1,6 @@
 require('env-yaml').config({path: __dirname + '/../serverless.env-test.yml'});
-const AWSController = require('../../util/aws/controller');
-const { messagesTableSchema, wfhTableSchema } = require('../../util/tableSchema');
-const { deleteTables } = require('../test-helper');
+const AWSController = require('../../opt/aws/controller');
+const { messagesTableSchema } = require('../../local_util/tableSchema');
 const chai = require('chai');
 const { expect } = chai;
 
@@ -26,10 +25,8 @@ describe('Dynamodb functions', () => {
   it('Successfully creates all tables', async () => {
 
     let resMessages = await awsController.dynamodb.createTable(messagesTableSchema);
-    let resWFH = await awsController.dynamodb.createTable(wfhTableSchema);
 
     expect(resMessages.TableDescription).to.not.be.null;
-    expect(resWFH.TableDescription).to.not.be.null;
   });
 
   it('Successfully puts an Item', async () => {
@@ -87,13 +84,6 @@ describe('Dynamodb functions', () => {
         TableName: messagesTableSchema.TableName
       }
     );
-    let resWFH = await awsController.dynamodb.deleteTable(
-      {
-        //oops this needs to be updated to use the env variable, not the table schema. 
-        TableName: wfhTableSchema.TableName
-      }
-    );
     expect(resMessages.TableDescription).to.not.be.null;
-    expect(resWFH.TableDescription).to.not.be.null;
   })
 });

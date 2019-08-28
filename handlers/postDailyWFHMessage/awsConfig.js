@@ -8,7 +8,7 @@ let dynamodbConfig;
 // let s3Config;
 // etc...
 
-if(process.env.STAGE === 'dev' && process.env.LOCAL_DYNAMODB_ENDPOINT) {
+if(process.env.STAGE === 'local' && process.env.LOCAL_DYNAMODB_ENDPOINT) {
   dynamodbConfig = {
     region: 'localhost',
     endpoint: process.env.LOCAL_DYNAMODB_ENDPOINT,
@@ -17,7 +17,7 @@ if(process.env.STAGE === 'dev' && process.env.LOCAL_DYNAMODB_ENDPOINT) {
   // etc...
 } else {
   dynamodbConfig = {
-    region: process.env.AWS_REGION,
+    region: process.env.REGION,
   }
 }
 

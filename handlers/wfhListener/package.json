@@ -1,0 +1,15 @@
+{
+  "name": "wfh-listener-lambda",
+  "version": "1.0.0",
+  "description": "Lambda listens to slack reactions for wfh message reactions",
+  "main": "wfhListener.index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash.get": "^4.4.2",
+    "path": "^0.12.7"
+  }
+}
