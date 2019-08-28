@@ -43,6 +43,7 @@ provider:
     SLACK_WFH_CHANNEL: ${file(./serverless.env.yml):SLACK_WFH_CHANNEL}
     WFH_BOT_SLACK_ID: ${file(./serverless.env.yml):WFH_BOT_SLACK_ID}
     MESSAGES_TABLE: ${file(./serverless.env.yml):MESSAGES_TABLE}
+    LOCAL_DYNAMODB_ENDPOINT: ${file(./serverless.env.yml):LOCAL_DYNAMODB_ENDPOINT}
   iamRoleStatements:
     - Effect: "Allow"
       Action: 
@@ -71,8 +72,6 @@ functions:
         - "**/**/package.json"
       include:
         - handlers/wfhListener/**
-    environment:
-      LOCAL_DYNAMO_ENDPOINT: ${file(./serverless.env.yml):LOCAL_DYNAMODB_ENDPOINT}
     layers:
       - { Ref: UtilLambdaLayer }
     

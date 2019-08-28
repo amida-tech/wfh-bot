@@ -1,8 +1,8 @@
+//TODO fix this require failing silently
 require('env-yaml').config({path: process.cwd() + '/serverless.env.yml'});
+const { messagesTableSchema } = require('./tableSchema');
 
-const { messagesTableSchema, wfhTableSchema } = require('./tableSchema');
-
-const AWSController = require('./aws/controller');
+const AWSController = require('../opt/aws/controller');
 const awsController = new AWSController({
   dynamodb: {
     region: 'localhost',
@@ -12,4 +12,3 @@ const awsController = new AWSController({
 
 
 awsController.dynamodb.createTable(messagesTableSchema).then(console.log)
-awsController.dynamodb.createTable(wfhTableSchema).then(console.log)
