@@ -20,7 +20,8 @@
     "test-handlers": "./node_modules/.bin/_mocha test/integration/handlers.integration.js -t 10000",
     "test-slack": "./node_modules/.bin/_mocha test/integration/slack.integration.js -t 10000",
     "test-aws": "./node_modules/.bin/_mocha test/unit/awsController.unit.js -t 10000",
-    "generate-google-token": "node generateGoogleToken.js"
+    "generate-google-token": "node generateGoogleToken.js",
+    "generate-tables": "node local_util/generateTables.js "
   },
   "repository": {
     "type": "git",

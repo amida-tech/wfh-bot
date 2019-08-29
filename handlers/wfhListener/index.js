@@ -15,7 +15,7 @@ module.exports.handler = async (event, context) => {
   };
   try {
     const body = JSON.parse(event.body);
-    const challenge = get(event, 'challenge');
+    const challenge = get(body, 'challenge');
     const eventType = get(body, 'event.type');
     const correctEventType = 
       (eventType == 'reactionAdded' || eventType === 'reactionRemoved') 

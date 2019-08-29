@@ -1,3 +1,9 @@
+# Dependencies
+
+- Docker
+- node 10.16
+- npm
+
 # Setup 
  
 1) Download dependencies
@@ -7,6 +13,8 @@
 2) copy config files
 ```cp serverless.env.example.yml serverless.env.yml```
 ```cp test/serverless.env-test.example.yml test/serverless.env-test.yml```
+
+fill out 
 
 3) Configure google authentication information (this part is depressingly manual)
 - visit this link: https://developers.google.com/calendar/quickstart/nodejs and click "enable google calendar"
@@ -18,6 +26,10 @@
 - then, 
   run ```npm run generate-google-token``` 
   go to the link provided and enter the code into the command prompt.
+
+4) setting up local dynamodb
+- ```docker run -p 8000:8000 amazon/dynamodb-local```
+- ```npm run generate-tables```
 
 
 Then you can get the rest of the environment variables including the slack bot's token and slack id from one pass.

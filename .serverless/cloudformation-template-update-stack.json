@@ -1,0 +1,578 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "WfhListenerLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/slack-listener-dev-wfhListener"
+      }
+    },
+    "PostDailyMessageLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/slack-listener-dev-postDailyMessage"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "dev",
+                  "slack-listener",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/slack-listener-dev-wfhListener:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/slack-listener-dev-postDailyMessage:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/slack-listener-dev-wfhListener:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/slack-listener-dev-postDailyMessage:*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:dynamodb:us-west-1:${AWS::AccountId}:table/MESSAGES_TABLE"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:GetItem"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:dynamodb:us-west-1:${AWS::AccountId}:table/MESSAGES_TABLE"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "slack-listener",
+              "dev",
+              "us-west-1",
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "UtilLambdaLayer": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/slack-listener/dev/1567045487297-2019-08-29T02:24:47.297Z/Util.zip"
+        },
+        "LayerName": "Util"
+      }
+    },
+    "UtilWildLambdaLayerPermission": {
+      "Type": "AWS::Lambda::LayerVersionPermission",
+      "Properties": {
+        "Action": "lambda:GetLayerVersion",
+        "LayerVersionArn": {
+          "Ref": "UtilLambdaLayer"
+        },
+        "Principal": "*"
+      }
+    },
+    "WfhListenerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/slack-listener/dev/1567045487297-2019-08-29T02:24:47.297Z/wfhListener.zip"
+        },
+        "FunctionName": "slack-listener-dev-wfhListener",
+        "Handler": "handlers/wfhListener/index.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "REGION": "us-west-1",
+            "STAGE": "dev",
+            "GOOGLE_CLIENT_ID": "630793328205-prjs71hslerpd4s10l9seggcr5991opn.apps.googleusercontent.com",
+            "GOOGLE_PROJECT_ID": "quickstart-1556893530597",
+            "GOOGLE_AUTH_URI": "https://accounts.google.com/o/oauth2/auth",
+            "GOOGLE_TOKEN_URI": "https://oauth2.googleapis.com/token",
+            "GOOGLE_AUTH_PROVIDER_X509_CERT_URL": "https://www.googleapis.com/oauth2/v1/certs",
+            "GOOGLE_CLIENT_SECRET": "QPHaBZcRch4jEJOD_sMYyTqd",
+            "GOOGLE_REDIRECT_URIS_1": "urn:ietf:wg:oauth:2.0:oob",
+            "GOOGLE_REDIRECT_URIS_2": "http://localhost",
+            "WFH_GCAL_ID": "amida-tech.com_9dugut48t480pb4qee57stskjs@group.calendar.google.com",
+            "SLACK_WFH_CHANNEL": "CLUAT0K0V",
+            "WFH_BOT_SLACK_ID": "ULD1JVA0L",
+            "MESSAGES_TABLE": "MESSAGES_TABLE",
+            "LOCAL_DYNAMODB_ENDPOINT": "http://localhost:8000"
+          }
+        },
+        "Layers": [
+          {
+            "Ref": "UtilLambdaLayer"
+          }
+        ]
+      },
+      "DependsOn": [
+        "WfhListenerLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "WfhListenerLambdaVersion2ljssN1iq9VP4pdt5ZBoXZWEnL5Qc32zBEluH0B8I": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "WfhListenerLambdaFunction"
+        },
+        "CodeSha256": "r/BO18uzz5PJK7fqfKObGh/Dl+nsK03Worw/hBiYWQQ="
+      }
+    },
+    "PostDailyMessageLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/slack-listener/dev/1567045487297-2019-08-29T02:24:47.297Z/postDailyMessage.zip"
+        },
+        "FunctionName": "slack-listener-dev-postDailyMessage",
+        "Handler": "handlers/postDailyWFHMessage/index.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "REGION": "us-west-1",
+            "STAGE": "dev",
+            "GOOGLE_CLIENT_ID": "630793328205-prjs71hslerpd4s10l9seggcr5991opn.apps.googleusercontent.com",
+            "GOOGLE_PROJECT_ID": "quickstart-1556893530597",
+            "GOOGLE_AUTH_URI": "https://accounts.google.com/o/oauth2/auth",
+            "GOOGLE_TOKEN_URI": "https://oauth2.googleapis.com/token",
+            "GOOGLE_AUTH_PROVIDER_X509_CERT_URL": "https://www.googleapis.com/oauth2/v1/certs",
+            "GOOGLE_CLIENT_SECRET": "QPHaBZcRch4jEJOD_sMYyTqd",
+            "GOOGLE_REDIRECT_URIS_1": "urn:ietf:wg:oauth:2.0:oob",
+            "GOOGLE_REDIRECT_URIS_2": "http://localhost",
+            "WFH_GCAL_ID": "amida-tech.com_9dugut48t480pb4qee57stskjs@group.calendar.google.com",
+            "SLACK_WFH_CHANNEL": "CLUAT0K0V",
+            "WFH_BOT_SLACK_ID": "ULD1JVA0L",
+            "MESSAGES_TABLE": "MESSAGES_TABLE",
+            "LOCAL_DYNAMODB_ENDPOINT": "http://localhost:8000",
+            "SLACK_BOT_API_TOKEN": "xoxb-2363543216-693052996020-vwVkpj552Hl2yHBllBwFbWno"
+          }
+        },
+        "Layers": [
+          {
+            "Ref": "UtilLambdaLayer"
+          }
+        ]
+      },
+      "DependsOn": [
+        "PostDailyMessageLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "PostDailyMessageLambdaVersion0g65DrDP8jmacJ0N7GJku77ycDrvfjqSOMjfCdAjF7w": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "PostDailyMessageLambdaFunction"
+        },
+        "CodeSha256": "r+9acL5Mfv9lo97HIGN4dP/vkB5IR50jgFn6bDQHJ2Q="
+      }
+    },
+    "ApiGatewayRestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "dev-slack-listener",
+        "EndpointConfiguration": {
+          "Types": [
+            "EDGE"
+          ]
+        }
+      }
+    },
+    "ApiGatewayResourceWfhDashlistener": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "wfh-listener",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourcePostmessage": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "postMessage",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodWfhDashlistenerPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceWfhDashlistener"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "WfhListenerLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayMethodPostmessageGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourcePostmessage"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "PostDailyMessageLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayDeployment1567045487310": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "StageName": "dev"
+      },
+      "DependsOn": [
+        "ApiGatewayMethodWfhDashlistenerPost",
+        "ApiGatewayMethodPostmessageGet"
+      ]
+    },
+    "WfhListenerLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "WfhListenerLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": {
+          "Fn::Join": [
+            "",
+            [
+              "apigateway.",
+              {
+                "Ref": "AWS::URLSuffix"
+              }
+            ]
+          ]
+        },
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "PostDailyMessageLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "PostDailyMessageLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": {
+          "Fn::Join": [
+            "",
+            [
+              "apigateway.",
+              {
+                "Ref": "AWS::URLSuffix"
+              }
+            ]
+          ]
+        },
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "MessagesTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "MESSAGES_TABLE",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "TIMESTAMP",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "ITEM_USER",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "ITEM_USER",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "TIMESTAMP",
+            "KeyType": "RANGE"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST"
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      }
+    },
+    "UtilLambdaLayerQualifiedArn": {
+      "Description": "Current Lambda layer version",
+      "Value": {
+        "Ref": "UtilLambdaLayer"
+      }
+    },
+    "WfhListenerLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "WfhListenerLambdaVersion2ljssN1iq9VP4pdt5ZBoXZWEnL5Qc32zBEluH0B8I"
+      }
+    },
+    "PostDailyMessageLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "PostDailyMessageLambdaVersion0g65DrDP8jmacJ0N7GJku77ycDrvfjqSOMjfCdAjF7w"
+      }
+    },
+    "ServiceEndpoint": {
+      "Description": "URL of the service endpoint",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "ApiGatewayRestApi"
+            },
+            ".execute-api.us-west-1.",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/dev"
+          ]
+        ]
+      }
+    }
+  }
+}

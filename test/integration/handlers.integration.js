@@ -48,7 +48,6 @@ describe('Daily Message Handler', () => {
     let response = await wfhListenerHandler({
       body: JSON.stringify(event)
     });
-    expect(resonse.body).to.exist;
     let responseBody = JSON.parse(response.body);
 
     expect(responseBody.challenge).to.equal(event.challenge);

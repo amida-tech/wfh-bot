@@ -23,7 +23,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   # profile: cloudformation_role
   # role: arn:aws:iam::844297601570:role/SlackLambdaRole
   region: ${file(./serverless.env.yml):REGION}
