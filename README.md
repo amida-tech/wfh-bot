@@ -3,6 +3,7 @@
 - Docker
 - node 10.16
 - npm
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
 # Setup 
  
@@ -14,7 +15,7 @@
 ```cp serverless.env.example.yml serverless.env.yml```
 ```cp test/serverless.env-test.example.yml test/serverless.env-test.yml```
 
-fill out 
+
 
 3) Configure google authentication information (this part is depressingly manual)
 - visit this link: https://developers.google.com/calendar/quickstart/nodejs and click "enable google calendar"
