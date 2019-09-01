@@ -16,7 +16,7 @@ One the bot is deployed, it will post a message to the specified slack channel e
 # Setup 
  
 1) Download node dependencies
-  - ```npm install-all-node-modules```  <- A common paradigm of serverless applications is to have separate node_modules in each lambda, as well as in layers, and your test directory or top level directory for local development. This command installs node_modules in each directory as necessary. 
+  - ```npm install-all-node-modules```  <- A common paradigm of serverless applications is to have separate node_modules in each lambda, as well as in each layer, and your test directory or top level directory for local development. This command installs node_modules in each directory as necessary. 
   
   - ```npm i -g serverless```
 
@@ -35,9 +35,7 @@ One the bot is deployed, it will post a message to the specified slack channel e
 
   - Once you download the credentials.json, copy the Client ID, secret, and projectId/quickstartId into both the serverless.env.yml and serverless.env-test.yml files (an automated script for that part would be hepful)
 
-  - then, 
-  run ```npm run generate-google-token``` 
-  go to the link provided and enter the code into the command prompt.
+  - then, run ```npm run generate-google-token``` and go to the link provided. Enter the code from the link into the command prompt.
   
 ## Setting up the slack bot via Slack App
 5) Go to the [slack apps home page](https://api.slack.com/apps) and click "create app"
@@ -61,7 +59,7 @@ One the bot is deployed, it will post a message to the specified slack channel e
 2) Locally running the api:
   - ```sls offline```
 3) invoking a function:
-  -  ```sls invoke -n {function name}```
+  -  ```sls invoke -n {function name}``` <- need to make sure this works and add more local development commands. 
 
 
 ## AWS Roles and permissions
@@ -92,9 +90,13 @@ One the bot is deployed, it will post a message to the specified slack channel e
 # Testing 
 
 - All tests: ```npm test```  
+- Unit tests: ```npm run test-unit```
+- AWS controller unit test: ```npm run test-aws```
 - Integration tests: ```npm run test-integration```
-- unit tests: ```npm run test-unit```
-- test handlers: ```npm run test-handlers```
+- Calendar integration tests: ```npm run test-calendar```
+- Slack integration tests: ```npm run test-slack```
+- Handler integration tests: ```npm run test-handlers```
+- Controller integration tests: ```npm run test-controllers```
 
 # Caveats
 1) The bot will invite users to work-from-home events based on their slack emails.
