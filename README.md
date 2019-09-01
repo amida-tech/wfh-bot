@@ -51,11 +51,18 @@ One the bot is deployed, it will post a message to the specified slack channel e
 - [Head back to your slack app](https://api.slack.com/apps) and navigate to event subscriptions.
 - Subscribe to reaction events, an past the post url of your work-from-home listener in the provided form. This will send a "challenge" post to the lambda, which will respond back with the challenge parameter.
 
+## Slack Helper Scripts
+
+- Determining your slack channel's ID, your test slack user's slack firstname and ID as well as your slack bot's Id requires the use of the slack API, so some scripts have been provided to help with this. 
+ TODO: scripts
+
 ## Run tests
 - ```npm test```
 - If all pass, you're good to proceed to deployment
 
 # Deployment
+
+- ```sls deploy```
 
 ## Local development: 
 
