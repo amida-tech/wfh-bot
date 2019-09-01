@@ -15,8 +15,9 @@ One the bot is deployed, it will post a message to the specified slack channel e
 
 # Setup 
  
-1) Download dependencies
-  - ```npm i```
+1) Download node dependencies
+  - ```npm install-all-node-modules```  <- A common paradigm of serverless applications is to have separate node_modules in each lambda, as well as in layers, and your test directory or top level directory for local development. This command installs node_modules in each directory as necessary. 
+  
   - ```npm i -g serverless```
 
 2) copy config files
@@ -105,10 +106,11 @@ One the bot is deployed, it will post a message to the specified slack channel e
 1) Currently, if a user reacts to a previous day's message, it will add/delete an event for the current date. Not the date of the message.
 2) Race condition between adding/removing a reaction. Adding a reaction and then deleting it fires off two different instances of the listener lambda. This leaves the potential for the deletion lambda to trigger first, and the addition lambda to be fired second, leaving the event on the calendar.
 3) While there is currently some code for adding work-from-home events on a specific date, it is not ready or tested.
-4) It should not be necessary to run the "createTables" script for local development and tests. serverless-dyanmodb-local should take care of that but I haven't yet figured out how that works. 
-5) The bot does not yet post a message on a scheduled basis. The serverless file needs a cloudwatch event.
-6) Many aspects of this should be parameterized. E.g., the message posted, the emoji used for declaring a work from home event, and the time of day that the message should be posted. 
-7) At the moment, to determine the correct slack channel ID and your bot's user ID you must call the slack listUsers ad listChannels API and search for the correct user manually. This should be scripted.
+4) Requiring the entire AWS-sdk is cumbersome and delays lambda cold starts. The opt layer should only require specific services. Haven't gotten that to work yet. 
+5) It should not be necessary to run the "createTables" script for local development and tests. serverless-dyanmodb-local should take care of that but I haven't yet figured out how that works. 
+6) The bot does not yet post a message on a scheduled basis. The serverless file needs a cloudwatch event.
+7) Many aspects of this should be parameterized. E.g., the message posted, the emoji used for declaring a work from home event, and the time of day that the message should be posted. 
+8) At the moment, to determine the correct slack channel ID and your bot's user ID you must call the slack listUsers ad listChannels API and search for the correct user manually. This should be scripted.
 
 
 
