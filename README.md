@@ -113,6 +113,7 @@ One the bot is deployed, it will post a message to the specified slack channel e
 6) The bot does not yet post a message on a scheduled basis. The serverless file needs a cloudwatch event.
 7) Many aspects of this should be parameterized. E.g., the message posted, the emoji used for declaring a work from home event, and the time of day that the message should be posted. 
 8) At the moment, to determine the correct slack channel ID and your bot's user ID you must call the slack listUsers ad listChannels API and search for the correct user manually. This should be scripted.
+9) The google credentials.json file is contructed from environment variables based on the original file downloaded from the google authentication setup. The variables in this file may drift over time.
 
 
 
