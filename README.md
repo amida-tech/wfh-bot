@@ -22,6 +22,8 @@ One the bot is deployed
 2) copy config files
   - ```cp serverless.env.example.yml serverless.env.yml```
   - ```cp test/serverless.env-test.example.yml test/serverless.env-test.yml```
+  
+## Setting up google calendar & authentication
 
 3) Create a google calendar to be accessed by your slack bot. Navigate to the calendar's settings and copy the calendar Id into the serverless.env.yml and serverless.test-env.yml files under WFH_GCAL_ID.
 
@@ -37,14 +39,18 @@ One the bot is deployed
   go to the link provided and enter the code into the command prompt.
   
 ## Setting up the slack bot via Slack App
-1) Go to the [slack apps home page](https://api.slack.com/apps) and click "create app"
-2) Once your app ha been created, navigate to "bot users" and click "add a bot user" 
-3)  Navigate to "OAuth & permissions", scroll down to "scopes" and add the following permissions:
+5) Go to the [slack apps home page](https://api.slack.com/apps) and click "create app"
+6) Once your app ha been created, navigate to "bot users" and click "add a bot user" 
+7)  Navigate to "OAuth & permissions", scroll down to "scopes" and add the following permissions:
   - reactions:read
   - users:read
   - chat:write:bot
-4) Naviagate up to "install app in workspace" to install the app in your workspace, which will give your bot user an API token.
-5) copy the "Bot User OAuth Access Token" to your serverless.env.yml & serverless.test-env.yml files.
+8) Naviagate up to "install app in workspace" to install the app in your workspace, which will give your bot user an API token.
+9) copy the "Bot User OAuth Access Token" to your serverless.env.yml & serverless.test-env.yml files.
+
+## Run tests
+- ```npm test```
+- If all pass, you're good to go
 
 ## Local development: 
 
