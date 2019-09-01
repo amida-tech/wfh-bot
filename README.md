@@ -137,6 +137,7 @@ One the bot is deployed, it will post a message to the specified slack channel e
 8) At the moment, to determine the correct slack channel ID and your bot's user ID you must call the slack listUsers ad listChannels API and search for the correct user manually. This should be scripted.
 9) The google credentials.json file is contructed from environment variables based on the original file downloaded from the google authentication setup. The variables in this file may drift over time.
 10) Acceptance tests are badly needed. 
+11) Need to use name instead of first name for calendar event. 
 
 
 
