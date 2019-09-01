@@ -46,10 +46,16 @@ One the bot is deployed, it will post a message to the specified slack channel e
   - chat:write:bot
 8) Naviagate up to "install app in workspace" to install the app in your workspace, which will give your bot user an API token.
 9) copy the "Bot User OAuth Access Token" to your serverless.env.yml & serverless.test-env.yml files.
+10) **This takes place after deployment** 
+- After deployment you must subscribe your work-from-home listener lambda to reaction events via your slack app. 
+- [Head back to your slack app](https://api.slack.com/apps) and navigate to event subscriptions.
+- Subscribe to reaction events, an past the post url of your work-from-home listener in the provided form. This will send a "challenge" post to the lambda, which will respond back with the challenge parameter.
 
 ## Run tests
 - ```npm test```
-- If all pass, you're good to go
+- If all pass, you're good to proceed to deployment
+
+# Deployment
 
 ## Local development: 
 
