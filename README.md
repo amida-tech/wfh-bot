@@ -49,7 +49,7 @@ One the bot is deployed, it will post a message to the specified slack channel e
 10) **This takes place after deployment** 
 - After deployment you must subscribe your work-from-home listener lambda to reaction events via your slack app. 
 - [Head back to your slack app](https://api.slack.com/apps) and navigate to event subscriptions.
-- Subscribe to reaction events, an past the post url of your work-from-home listener in the provided form. This will send a "challenge" post to the lambda, which will respond back with the challenge parameter.
+- Subscribe to reaction events, and past the url of your work-from-home listener post endpoint in the provided form. This will send a "challenge" post to the lambda, which will respond back with the challenge parameter.
 
 ## Slack Helper Scripts
 
