@@ -16,7 +16,7 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 # Setup 
  
 1) Download node dependencies
-  - ```npm install-all-node-modules```  <- A common paradigm of serverless applications is to have separate node_modules in each lambda, as well as in each layer, and your test directory or top level directory for local development. This command installs node_modules in each directory as necessary. 
+  - ```npm run install-all-node-modules```  <- A common paradigm of serverless applications is to have separate node_modules in each lambda, as well as in each layer, and your test directory or top level directory for local development. This command installs node_modules in each directory as necessary. 
   
   - ```npm i -g serverless```
 
