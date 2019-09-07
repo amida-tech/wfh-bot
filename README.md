@@ -51,17 +51,17 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 - The "create-env-file" will create each environment file for you, and will query slack for your slack bot and slack channel IDs by name, and in the case of your test file it will query for your test user's first name and id as well.
 - You should use a different serverless.env file for each environment: local, test, dev, staging, prod.
 - The "create-env-file" script will ask you for each variable as necessary, and generate the file at the path specified by the "-p" flag.
-- To generate your local development serverless.env file, run ```npm run create-env-file -p serverless.env-local.yml```
+- To generate your local development serverless.env file, run ```npm run create-env-file -- -p serverless.env-local.yml```
 - Alternatively you can copy the serverless.env.example.yml and manually fill out the variables. If you choose to do this you will need to determine the slack IDs of your slack channel, bot user, and test user, which requires some querying. Slack provides some useful interfaces for this: https://api.slack.com/methods/users.list/test https://api.slack.com/methods/channels.list/test 
 
 ## Run tests
-- Generate yout test serverless.env file: ``` npm run create-env-file -p serverless.env-test.yml```
+- Generate yout test serverless.env file: ``` npm run create-env-file -- -p serverless.env-test.yml```
 - Alternatively, you can copy serverless.env-test.example.yml and manually fill out the variables.
 - then run ```npm test```
 - If all pass, you're good to proceed to deployment
 
 # Deployment
-- Generate your respective dev/staging/prod environment files with ```npm run create-env-file -p {filename}```
+- Generate your respective dev/staging/prod environment files with ```npm run create-env-file -- -p {filename}```
 - deploy dev: ```sls deploy -p serverless.env-dev.yml```
 - deploy staging: ```sls deploy -p serverless.env-staging.yml```
 - deploy production: ```sls deploy -p serverless.env-prod.yml```
