@@ -55,7 +55,7 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 - Alternatively you can copy the serverless.env.example.yml and manually fill out the variables. If you choose to do this you will need to determine the slack IDs of your slack channel, bot user, and test user, which requires some querying. Slack provides some useful interfaces for this: https://api.slack.com/methods/users.list/test https://api.slack.com/methods/channels.list/test 
 
 ## Run tests
-- Generate yout test serverless.env file: ``` npm run create-env-file -- -p serverless.env-test.yml```
+- Generate yout test serverless.env file: ``` npm run create-env-file -- -p serverless.env-test.yml``` (stage should be "LOCAL" which is the default)
 - Alternatively, you can copy serverless.env-test.example.yml and manually fill out the variables.
 - then run ```npm test```
 - If all pass, you're good to proceed to deployment
