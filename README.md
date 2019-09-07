@@ -19,10 +19,6 @@ Once the bot is deployed, it will post a message to the specified slack channel 
   - ```npm run install-all-node-modules```  <- A common paradigm of serverless applications is to have separate node_modules in each lambda, as well as in each layer, and your test directory or top level directory for local development. This command installs node_modules in each directory as necessary. 
   
   - ```npm i -g serverless```
-
-2) copy config files
-  - ```cp serverless.env.example.yml serverless.env.yml```
-  - ```cp test/serverless.env-test.example.yml test/serverless.env-test.yml```
   
 ## Setting up google calendar & authentication
 
@@ -51,18 +47,24 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 - [Head back to your slack app](https://api.slack.com/apps) and navigate to event subscriptions.
 - Subscribe to reaction events, and past the url of your work-from-home listener post endpoint in the provided form. This will send a "challenge" post to the lambda, which will respond back with the challenge parameter.
 
-## Slack Helper Scripts
-
-- Determining your slack channel's ID, your test slack user's slack firstname and ID as well as your slack bot's Id requires the use of the slack API, so some scripts have been provided to help with this. 
- TODO: scripts
+## Setting up Environment Files
+- The "create-env-file" will create each environment file for you, and will query slack for your slack bot and slack channel IDs by name, and in the case of your test file it will query for your test user's first name and id as well.
+- You should use a different serverless.env file for each environment: local, test, dev, staging, prod.
+- The "create-env-file" script will ask you for each variable as necessary, and generate the file at the path specified by the "-p" flag.
+- To generate your local development serverless.env file, run ```npm run create-env-file -p serverless.env-local.yml```
+- Alternatively you can copy the serverless.env.example.yml and manually fill out the variables. If you choose to do this you will need to determine the slack IDs of your slack channel, bot user, and test user, which requires some querying. Slack provides some useful interfaces for this: https://api.slack.com/methods/users.list/test https://api.slack.com/methods/channels.list/test 
 
 ## Run tests
-- ```npm test```
+- Generate yout test serverless.env file: ``` npm run create-env-file -p serverless.env-test.yml```
+- Alternatively, you can copy serverless.env-test.example.yml and manually fill out the variables.
+- then run ```npm test```
 - If all pass, you're good to proceed to deployment
 
 # Deployment
-
-- ```sls deploy```
+- Generate your respective dev/staging/prod environment files with ```npm run create-env-file -p {filename}```
+- deploy dev: ```sls deploy -p serverless.env-dev.yml```
+- deploy staging: ```sls deploy -p serverless.env-staging.yml```
+- deploy production: ```sls deploy -p serverless.env-prod.yml```
 
 ## Local development: 
 
@@ -70,9 +72,9 @@ Once the bot is deployed, it will post a message to the specified slack channel 
   - ```docker run -p 8000:8000 amazon/dynamodb-local```
   - ```npm run generate-tables```
 2) Locally running the api:
-  - ```sls offline```
+  - ```sls offline -p serverless.env-local.yml```
 3) invoking a function:
-  -  ```sls invoke -n {function name}``` <- need to make sure this works and add more local development commands. 
+  -  ```sls invoke -n {function name} -p serverless.env-local.yml``` <- need to make sure this works and add more local development commands. 
 
 
 ## AWS Roles and permissions
@@ -104,11 +106,11 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 
 - Before you can test slack integrations, you must
 1) have your slack bot set up and 
-2) paste a slack user's email, first name, and slack ID pasted into your severless.env-test.yml
+2) Create a severless.env-test.yml env file in the test directory with a slack user's email, first name, and slack ID.
 
 - Before you can test google calendar integration, you must
 1) have your google calendar ID and
-2) have you r google authentication set up and pasted into the serverless.env-test.yml
+2) have your google authentication set up and inserted into the serverless.env-test.yml
 
 ## Test Commands
 - All tests: ```npm test```  
@@ -124,6 +126,7 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 1) The bot will invite users to work-from-home events based on their slack emails.
 2) The google user authenticated for the wfh bot should have write access to the calendar in question
 3) All users that could potentially be invited to a work from home event on the work from home calendar should have read access on that calendar as well. 
+4) When posting work-from-home events, the bot will use the first name of the user, but if that does not exist it will default to "real_name".
 
 # Current known bugs/issues and necessary improvements
 
@@ -135,9 +138,8 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 6) The bot does not yet post a message on a scheduled basis. The serverless file needs a cloudwatch event.
 7) Many aspects of this should be parameterized. E.g., the message posted, the emoji used for declaring a work from home event, and the time of day that the message should be posted. 
 8) At the moment, to determine the correct slack channel ID and your bot's user ID you must call the slack listUsers ad listChannels API and search for the correct user manually. This should be scripted.
-9) The google credentials.json file is contructed from environment variables based on the original file downloaded from the google authentication setup. The variables in this file may drift over time.
+9) The google credentials.json file is contructed from environment variables based on the original file downloaded from the google authentication setup. The variables in this file may drift over time if Google makes any changes to that file.
 10) Acceptance tests are badly needed. 
-11) Need to use name instead of first name for calendar event. 
 
 
 
