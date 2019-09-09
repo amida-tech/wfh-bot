@@ -4,8 +4,8 @@
 //        e.g. const AWS = require('aws-sdk/clients/dynamodbClient');
 //        for some reason this ^^ didn't work.
 const AWS = require('aws-sdk');
-const get = require('lodash/get');
-const has = require('lodash/has');
+const get = require('lodash.get');
+const has = require('lodash.has');
 
 class AWSController {
 

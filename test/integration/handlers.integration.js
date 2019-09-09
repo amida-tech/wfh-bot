@@ -98,14 +98,14 @@ describe('WFH Listener', async () => {
     let body = JSON.parse(messageRes.body);
     slackReactionHouse = {
       event: {
-        type: "reactionAdded",
+        type: "reaction_added",
         user: testUserId,
         item: {
           type: 'message',
           channel: slackWFHChannel,
           ts: body.timeStamp
         },
-        reaction: '"house"',
+        reaction: 'house',
         item_user: slackBotUserId,
       }
     };
@@ -127,7 +127,7 @@ describe('WFH Listener', async () => {
       // If not, make one.
     } 
     
-    slackReactionHouse.event.type = 'reactionRemoved'
+    slackReactionHouse.event.type = 'reaction_removed'
     let event = {
       body: JSON.stringify(slackReactionHouse)
     }

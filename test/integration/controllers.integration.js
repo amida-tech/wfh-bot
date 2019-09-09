@@ -16,6 +16,7 @@ const {
 const { addToCal, listEvents } = require('../../opt/google/calendar');
 
 const AWSController = require('../../opt/aws/controller');
+const { dynamodbConfig } = require('../../local_util/awsLocalConfig');
 
 const {
   getStartAndEndOfTodayDate,
@@ -23,10 +24,7 @@ const {
 } = require('../../opt/time');
 
 const awsController = new AWSController({
-  dynamodb: {
-    region: 'localhost',
-    endpoint: process.env.LOCAL_DYNAMODB_ENDPOINT,
-  },
+  dynamodb: dynamodbConfig
 });
 
 chai.use(chaiAsPromised);

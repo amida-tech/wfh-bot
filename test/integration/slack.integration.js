@@ -1,6 +1,6 @@
 require('env-yaml').config({path: __dirname + '/../serverless.env-test.yml'});
 
-const { getInfoBySlackId, postMessage, getSlackIdByEmail } = require('../../opt/slack');
+const { getInfoBySlackId, postMessage, getInfoByEmail } = require('../../opt/slack');
 
 const chai = require('chai');
 const { expect } = chai;
@@ -14,7 +14,9 @@ const message = "Hi! this is the work from home bot. You can place yourself on t
 
 describe('infoBySlackId integration', () => {
   it('Successfully gets slackId by email', async () => {
-    let id = await getSlackIdByEmail(testUserEmail);
+    let info = await getInfoByEmail(testUserEmail);
+    expect(info).to.exist
+    let { id } = info;
     expect(id).to.equal(testUserId);
   });
 

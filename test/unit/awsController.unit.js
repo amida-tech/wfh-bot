@@ -1,17 +1,15 @@
 require('env-yaml').config({path: __dirname + '/../serverless.env-test.yml'});
 const AWSController = require('../../opt/aws/controller');
+const { dynamodbConfig } = require('../../local_util/awsLocalConfig');
+
 const { messagesTableSchema } = require('../../local_util/tableSchema');
 const chai = require('chai');
 const { expect } = chai;
 
 
 const awsController = new AWSController({
-  dynamodb: {
-    region: 'localhost',
-    endpoint: process.env.LOCAL_DYNAMODB_ENDPOINT,
-  },
+  dynamodb: dynamodbConfig
 });
-
 // These tests require a dynamodb instance running on
 // the specified local url formatted: '{http|https}://localhost:xxxx'
 

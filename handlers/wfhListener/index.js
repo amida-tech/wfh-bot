@@ -1,9 +1,9 @@
 'use strict';
 const controller = require('./controller');
-const get = require('lodash/get');
-const houseReaction = '"house"';
-const reactionAddedEvent = 'reactionAdded';
-const reactionRemovedEvent = 'reactionRemoved';
+const get = require('lodash.get');
+const houseReaction = 'house';
+const reactionAddedEvent = 'reaction_added';
+const reactionRemovedEvent = 'reaction_removed';
 
 module.exports.handler = async (event, context) => {
   let response = {
@@ -18,7 +18,7 @@ module.exports.handler = async (event, context) => {
     const challenge = get(body, 'challenge');
     const eventType = get(body, 'event.type');
     const correctEventType = 
-      (eventType == 'reactionAdded' || eventType === 'reactionRemoved') 
+      (eventType === reactionAddedEvent || eventType === reactionRemovedEvent) 
       && get(body, 'event.item.type') === 'message';
 
     if(challenge) {

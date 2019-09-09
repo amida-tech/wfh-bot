@@ -1,7 +1,6 @@
 "use strict";
 const path = require('path');
-const layerPath = process.env.STAGE === 'local' ? `${process.cwd()}` + '/opt' : '/opt';
-console.log(layerPath)
+const layerPath = process.env.LAYER_PATH;
 const AWSController = require(path.join(layerPath,'/aws/controller'));
 const { listEvents, addToCal, removeFromCal } = require(path.join(layerPath, './google/calendar'));
 const { getInfoBySlackId } = require(path.join(layerPath,'/slack'));
@@ -46,10 +45,9 @@ const addToWFHCal = async (slackId, date) => {
 
   const { start, end } = date ? getStartAndEndOfDateDate(date) : getStartAndEndOfTodayDate()
   
-  const { email, first_name } = await getInfoBySlackId(slackId);  
-  const summary = first_name + ' WFH';
+  const { email, name, first_name } = await getInfoBySlackId(slackId);  
+  const summary = first_name === '' ? name + ' WFH' : first_name + ' WFH';
   const attendees = [{email}];
-  //Might need to also check gcal for events created by non-wfh gcal user to keep table consistent w/ calendar
   let hasEvent = await hasWFHEvent({email, date});
   if(!hasEvent) {
     const res = await addToCal({calendarId: gCalIdWFH, attendees, summary, start, end});

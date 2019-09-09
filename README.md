@@ -9,7 +9,7 @@ One the bot is deployed
 # Dependencies
 
 - [Docker](https://docs.docker.com/v17.12/install/)
-- [node 10.16](https://nodejs.org/en/download/)
+- [node 10.16.3](https://nodejs.org/en/download/)
 - [npm^6](https://docs.npmjs.com/about-npm-versions#the-latest-release-of-npm)
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 

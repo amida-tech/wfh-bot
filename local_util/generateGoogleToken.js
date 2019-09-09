@@ -1,11 +1,11 @@
 "use strict";
-require('env-yaml').config({path: __dirname + '/serverless.env.yml'});
+require('env-yaml').config({path: process.cwd() + '/serverless.env-local.yml'});
 
 /* This is a small script to be used for intializing
    the Google configuration. Calling the "list events"
    function (or any google api) initiates the quickstart 
    process if it hasn't yet been completed*/
  
-let getAuth = require('./opt/google/authorize');
+let getAuth = require('../opt/google/authorize');
 
 getAuth()

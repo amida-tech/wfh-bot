@@ -43,7 +43,9 @@
       "name": "controllersIntegration",
       "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
       "args": [
-        "test/integration/controllers.integration.js"
+        "test/integration/controllers.integration.js",
+        "-t",
+        "10000"
       ]
     },
     {
@@ -77,20 +79,27 @@
       "type": "node",
       "request": "launch",
       "name": "createTables",
-      "program": "${workspaceRoot}/Users/steven/.nvm/versions/node/v10.16.0/bin/node",
-      "args": [
-        "util/generateTables.js"
-      ]
+      "program": "${workspaceRoot}/local_util/generateTables.js",
     },
     {
       "type": "node",
       "request": "launch",
       "name": "generateGoogleToken",
-      "program": "/Users/steven/.nvm/versions/node/v10.16.0/bin/node",
-      "args": [
-        "generateGoogleCreds.js"
-      ]
+      "program": "${workspaceRoot}/local_util/generateGoogleToken.js",
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "generateSlsEnv",
+      "program": "${workspaceRoot}/local_util/generateSlsEnv.js",
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "getChannelIdByName",
+      "program": "${workspaceRoot}/local_util/getWFHChannelId.js",
     }
+
   ]
 
 }

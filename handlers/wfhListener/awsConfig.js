@@ -4,23 +4,15 @@
   correspoding aws-sdk service constructor.
 */
 
-let dynamodbConfig;
+let dynamodbConfig = {}
+if(process.env.REGION) {
+  dynamodbConfig.region = process.env.REGION;
+}
+if(process.env.LOCAL_DYNAMODB_ENDPOINT) {
+  dynamodbConfig.endpoint = process.env.LOCAL_DYNAMODB_ENDPOINT;
+}
 // let s3Config;
 // etc...
-
-if(process.env.STAGE === 'local' && process.env.LOCAL_DYNAMODB_ENDPOINT) {
-  dynamodbConfig = {
-    region: 'localhost',
-    endpoint: process.env.LOCAL_DYNAMODB_ENDPOINT,
-  }
-  // s3Config = {region: 'localhost }
-  // etc...
-} else {
-  dynamodbConfig = {
-    region: process.env.REGION,
-  }
-}
-
 
 module.exports = {
   dynamodbConfig,

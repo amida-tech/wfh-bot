@@ -1,6 +1,6 @@
 const has = require('lodash/has');
 const { messagesTableSchema } = require('../local_util/tableSchema');
-const { dynamodbConfig } = require('./awsTestConfig');
+const { dynamodbConfig } = require('../local_util/awsLocalConfig');
 const { removeFromCal, listEvents } = require('../opt/google/calendar');
 const AWSController = require('../opt/aws/controller');
 const awsController = new AWSController({

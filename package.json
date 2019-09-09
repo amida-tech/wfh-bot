@@ -3,25 +3,20 @@
   "version": "1.0.0",
   "description": "A slack bot which integrates with Google Calendar. Tell your teamates where you are with emojis!",
   "main": "N/A",
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
-    "env-yaml": "^0.1.2",
-    "mocha": "^6.2.0",
-    "serverless": "^1.50.1",
-    "serverless-dynamodb-local": "^0.2.38",
-    "serverless-offline": "^5.7.3",
-    "serverless-pseudo-parameters": "^2.4.0"
-  },
   "scripts": {
+    "offline": "STAGE=local && sls offline",
     "test": "./node_modules/.bin/_mocha test/**/*.js -t 10000",
+    "test-unit": "./node_modules/.bin/_mocha test/unit/*.js -t 10000",
+    "test-integration": "./node_modules/.bin/_mocha test/integration/*.js -t 10000",
     "test-controllers": "./node_modules/.bin/_mocha test/integration/controllers.integration.js -t 10000",
     "test-calendar": "./node_modules/.bin/_mocha test/integration/calendar.integration.js -t 10000",
     "test-handlers": "./node_modules/.bin/_mocha test/integration/handlers.integration.js -t 10000",
     "test-slack": "./node_modules/.bin/_mocha test/integration/slack.integration.js -t 10000",
     "test-aws": "./node_modules/.bin/_mocha test/unit/awsController.unit.js -t 10000",
-    "generate-google-token": "node generateGoogleToken.js",
-    "generate-tables": "node local_util/generateTables.js "
+    "generate-google-token": "node local_util/generateGoogleToken.js",
+    "generate-tables": "node local_util/generateTables.js ",
+    "install-all-node-modules": "npm i && cd opt && npm i && cd ../handlers/wfhListener && npm i && cd ../postDailyWFHMessage && npm i",
+    "create-env-file": "node local_util/generateServerlessEnv.js"
   },
   "repository": {
     "type": "git",
@@ -34,6 +29,15 @@
   },
   "homepage": "https://github.com/5t33/wfh-bot#readme",
   "dependencies": {
-    "lodash.has": "^4.5.2"
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "env-yaml": "^0.1.2",
+    "mocha": "^6.2.0",
+    "path": "^0.12.7",
+    "serverless-dynamodb-local": "^0.2.38",
+    "serverless-offline": "^5.10.1",
+    "serverless-pseudo-parameters": "^2.4.0",
+    "yaml": "^1.6.0",
+    "yargs": "^14.0.0"
   }
 }

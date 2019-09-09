@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-let has = require('lodash/has');
+let has = require('lodash.has'); 
 const getAuth = require('./authorize');
 const {
   getStartAndEndOfDateDateTime,

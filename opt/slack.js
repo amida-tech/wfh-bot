@@ -1,13 +1,11 @@
 const axios = require('axios');
-const get = require('lodash/get');
-const has = require('lodash/has');
-const find = require('lodash/find');
+const get = require('lodash.get');
+const has = require('lodash.has');
+const find = require('lodash.find');
 const slackAPIURL = 'https://slack.com/api';
 const token = process.env.SLACK_BOT_API_TOKEN
-
-
-
-const getSlackIdByEmail =  async email => {
+ 
+const getInfoByEmail = async email => {
   let emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
   if(!typeof email === 'string' || !emailRegex.test(email)) {
     console.error(JSON.stringify({
@@ -17,13 +15,15 @@ const getSlackIdByEmail =  async email => {
   }
   try {
     let res = await axios.get(`${slackAPIURL}/users.list?token=${token}`)
-    if(res.status === 200 && has(res,'data.members')) {
+    if(res.status === 200 && !has(res,'data.error') && has(res,'data.members')) {
       let member = find(res.data.members, member => {
         return get(member, 'profile.email') === email;
       });
-      if(member.id) {
-        return member.id;
+      if(member) {
+        return member;
       }
+    } else if(has(res,'data.error')) {
+      throw new Error(get(res, 'data.error'));
     }
   } catch(err) {
     console.error(err)
@@ -35,7 +35,7 @@ const getSlackIdByEmail =  async email => {
 const getInfoBySlackId = async slackId => {
   try{
     let res = await axios.get(`${slackAPIURL}/users.info?token=${token}&user=${slackId}`)
-    if(res.status === 200 && get(res, 'data.ok')) {
+    if(res.status === 200 && !has(res, 'data.error') && get(res, 'data.ok')) {
       if(get(res, 'data.user.profile')) {
         let profile = res.data.user.profile;
         return profile
@@ -48,6 +48,39 @@ const getInfoBySlackId = async slackId => {
     } else {
       console.error(res)
       throw new Error(res);
+    }
+  } catch(err) {
+    console.error(err)
+    throw new Error(err);
+  }
+}
+
+const getSlackBotIdByName = async slackBotName => {
+  try {
+    let res = await axios.get(`${slackAPIURL}/users.list?token=${token}`)
+    if(res.status === 200 && !has(res, 'data.error') && has(res,'data.members')) {
+      let member = find(res.data.members, member => {
+        return get(member, 'profile.real_name') === slackBotName;
+      });
+      if(has(member, 'id')) {
+        return get(member, 'id');
+      }
+    }
+  } catch(err) {
+    throw new Error(err);
+  }
+}
+
+const getChannelIdByName = async channelName => {
+  try {
+    let res = await axios.get(`${slackAPIURL}/channels.list?token=${token}`)
+    if(res.status === 200 && !has(res, 'data.error') && has(res,'data.channels')) {
+      let channel = find(res.data.channels, channel => {
+        return get(channel, 'name') === channelName;
+      });
+      if(has(channel, 'id')) {
+        return get(channel, 'id');
+      }
     }
   } catch(err) {
     console.error(err)
@@ -79,5 +112,7 @@ const postMessage = async (channel, msg, asUser) => {
 module.exports = {
   getInfoBySlackId,
   postMessage,
-  getSlackIdByEmail
+  getInfoByEmail,
+  getSlackBotIdByName,
+  getChannelIdByName
 }

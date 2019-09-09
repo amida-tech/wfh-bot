@@ -1,9 +1,8 @@
 "use strict";
-console.log(process.env)
-
 const path = require('path');
-const layerPath = process.env.STAGE === 'local' ? `${process.cwd()}` + '/opt' : '/opt';
-const uuidv4 = require('uuidv4');
+console.log(process.env.LAYER_PATH)
+const layerPath = process.env.LAYER_PATH;
+const uuidv4 = require('uuidv4').default;
 const AWSController = require(path.join(layerPath,'/aws/controller'));
 const { postMessage } = require(path.join(layerPath,'/slack'));
 const { dynamodbConfig } = require('./awsConfig');
@@ -24,6 +23,7 @@ const putInMessagesTable = async({ts, channel, itemUser}) => {
       UUID: { S: uuidv4() }
     }
   }
+  console.log(dynamodbConfig)
   return await awsController.dynamodb.putItem(req);
 }
 

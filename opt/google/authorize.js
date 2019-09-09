@@ -12,12 +12,7 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
 // created automatically when the authorization flow completes for the first
 // time.
 getTokenPath = () => {
-  let tokenPath;
-  if(process.env.STAGE === 'prod') {
-    tokenPath =  process.cwd() + '/tmp/token.json';
-  } else {
-    tokenPath =  process.cwd() + '/token.json';
-  }
+  let tokenPath =  path.join(__dirname, 'token.json');
   return tokenPath;
 }
 
@@ -26,7 +21,8 @@ getTokenPath = () => {
  * If multiple projects are created, this should be passed
  * in along with scope.
  */
-const assembleCredentials = () => ({
+const assembleCredentials = () =>{
+ return ({
   installed: {
     "client_id": process.env.GOOGLE_CLIENT_ID,
     "project_id": process.env.GOOGLE_PROJECT_ID,
@@ -37,6 +33,7 @@ const assembleCredentials = () => ({
     "redirect_uris": [ process.env.GOOGLE_REDIRECT_URIS_1, process.env.GOOGLE_REDIRECT_URIS_2]
   }
 })
+}
 
 /**
  * Get and store new token after prompting for user authorization, and then

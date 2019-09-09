@@ -1,6 +1,7 @@
 service: slack-listener 
 
 custom:
+  env-file: ./serverless.env-${self:provider.stage}.yml
   dynamodb:
   # If you only want to use DynamoDB Local in some stages, declare them here
     stages:
@@ -13,7 +14,7 @@ custom:
       migrate: true
       seed: true
       convertEmptyValues: true
-    # Uncomment only if you already have a DynamoDB running locally
+    # set to true only if you already have a DynamoDB running locally
       noStart: true
 
 plugins:
@@ -23,36 +24,41 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs8.10
+  # Uncoment the following two fields only if you want to apply a 
+  # role/profile durind deployment. If you wish to use a profile, you
+  # will need to add --profile {profile name} to each command.
   # profile: cloudformation_role
-  # role: arn:aws:iam::844297601570:role/SlackLambdaRole
-  region: ${file(./serverless.env.yml):REGION}
-  stage: ${file(./serverless.env.yml):STAGE}
+  # role: arn:aws:iam::#{AWS::AccountId}:role/SlackLambdaRole
+  region: ${file(${self:custom.env-file}):REGION}
+  stage: ${opt:stage, 'local'}
   environment:
     REGION: ${self:provider.region}
     STAGE: ${self:provider.stage}
-    GOOGLE_CLIENT_ID: ${file(./serverless.env.yml):GOOGLE_CLIENT_ID}
-    GOOGLE_PROJECT_ID: ${file(./serverless.env.yml):GOOGLE_PROJECT_ID}
-    GOOGLE_AUTH_URI: ${file(./serverless.env.yml):GOOGLE_AUTH_URI}
-    GOOGLE_TOKEN_URI: ${file(./serverless.env.yml):GOOGLE_TOKEN_URI}
-    GOOGLE_AUTH_PROVIDER_X509_CERT_URL: ${file(./serverless.env.yml):GOOGLE_AUTH_PROVIDER_X509_CERT_URL}
-    GOOGLE_CLIENT_SECRET: ${file(./serverless.env.yml):GOOGLE_CLIENT_SECRET}
-    GOOGLE_REDIRECT_URIS_1: ${file(./serverless.env.yml):GOOGLE_REDIRECT_URIS_1}
-    GOOGLE_REDIRECT_URIS_2: ${file(./serverless.env.yml):GOOGLE_REDIRECT_URIS_2}
-    WFH_GCAL_ID: ${file(./serverless.env.yml):WFH_GCAL_ID}
-    SLACK_WFH_CHANNEL: ${file(./serverless.env.yml):SLACK_WFH_CHANNEL}
-    WFH_BOT_SLACK_ID: ${file(./serverless.env.yml):WFH_BOT_SLACK_ID}
-    MESSAGES_TABLE: ${file(./serverless.env.yml):MESSAGES_TABLE}
-    LOCAL_DYNAMODB_ENDPOINT: ${file(./serverless.env.yml):LOCAL_DYNAMODB_ENDPOINT}
+    LAYER_PATH: ${file(${self:custom.env-file}):LAYER_PATH, '/opt'}
+    GOOGLE_CLIENT_ID: ${file(${self:custom.env-file}):GOOGLE_CLIENT_ID}
+    GOOGLE_PROJECT_ID: ${file(${self:custom.env-file}):GOOGLE_PROJECT_ID}
+    GOOGLE_AUTH_URI: ${file(${self:custom.env-file}):GOOGLE_AUTH_URI}
+    GOOGLE_TOKEN_URI: ${file(${self:custom.env-file}):GOOGLE_TOKEN_URI}
+    GOOGLE_AUTH_PROVIDER_X509_CERT_URL: ${file(${self:custom.env-file}):GOOGLE_AUTH_PROVIDER_X509_CERT_URL}
+    GOOGLE_CLIENT_SECRET: ${file(${self:custom.env-file}):GOOGLE_CLIENT_SECRET}
+    GOOGLE_REDIRECT_URIS_1: ${file(${self:custom.env-file}):GOOGLE_REDIRECT_URIS_1}
+    GOOGLE_REDIRECT_URIS_2: ${file(${self:custom.env-file}):GOOGLE_REDIRECT_URIS_2}
+    WFH_GCAL_ID: ${file(${self:custom.env-file}):WFH_GCAL_ID}
+    SLACK_WFH_CHANNEL: ${file(${self:custom.env-file}):SLACK_WFH_CHANNEL}
+    SLACK_BOT_API_TOKEN: ${file(${self:custom.env-file}):SLACK_BOT_API_TOKEN}
+    WFH_BOT_SLACK_ID: ${file(${self:custom.env-file}):WFH_BOT_SLACK_ID}
+    MESSAGES_TABLE: ${file(${self:custom.env-file}):MESSAGES_TABLE}
+    LOCAL_DYNAMODB_ENDPOINT: ${file(${self:custom.env-file}):LOCAL_DYNAMODB_ENDPOINT, ""}
   iamRoleStatements:
     - Effect: "Allow"
       Action: 
         - "dynamodb:PutItem"
-      Resource: arn:aws:dynamodb:${file(./serverless.env.yml):REGION}:#{AWS::AccountId}:table/${file(./serverless.env.yml):MESSAGES_TABLE}
+      Resource: arn:aws:dynamodb:${file(${self:custom.env-file}):REGION}:#{AWS::AccountId}:table/${file(${self:custom.env-file}):MESSAGES_TABLE}
     - Effect: "Allow"
       Action: 
         - "dynamodb:GetItem"
-      Resource: arn:aws:dynamodb:${file(./serverless.env.yml):REGION}:#{AWS::AccountId}:table/${file(./serverless.env.yml):MESSAGES_TABLE}
+      Resource: arn:aws:dynamodb:${file(${self:custom.env-file}):REGION}:#{AWS::AccountId}:table/${file(${self:custom.env-file}):MESSAGES_TABLE}
 
 package:
   individually: true
@@ -86,7 +92,7 @@ functions:
       include:
         - handlers/postDailyWFHMessage/**
     environment:
-      SLACK_BOT_API_TOKEN: ${file(./serverless.env.yml):SLACK_BOT_API_TOKEN}
+      SLACK_BOT_API_TOKEN: ${file(${self:custom.env-file}):SLACK_BOT_API_TOKEN}
     layers:
       - { Ref: UtilLambdaLayer }
 
@@ -95,7 +101,7 @@ resources:
     MessagesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${file(./serverless.env.yml):MESSAGES_TABLE}
+        TableName: ${file(${self:custom.env-file}):MESSAGES_TABLE}
         AttributeDefinitions:
           - 
             AttributeName: TIMESTAMP
@@ -115,6 +121,8 @@ resources:
 layers:
   Util:
     path: opt
+    compatibleRuntimes: 
+      - nodejs8.10
     allowedAccounts:
       - '*' # ALL accounts!
     retain: false
