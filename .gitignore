@@ -7,6 +7,10 @@ node_modules
 #env variables
 serverless.env.yml
 serverless.env-test.yml
+serverless.env-local.yml
+serverless.env-dev.yml
+serverless.env-staging.yml
+serverless.env.prod.yml
 
 #google creds
 credentials.json
