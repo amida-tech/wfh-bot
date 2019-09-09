@@ -4,7 +4,7 @@ This is a serverless slack bot that can be used by teams to place work from home
 
 # Usage
 
-One the bot is deployed 
+Once the bot is deployed, it will post a message to the specified slack channel every morning at the specified time. To add an event to the designated "work from home" calendar, you can reply to the message with a "house" emoji. Deleting the emoji will also remove the event from the calendar. The event details posted to the calendar will be the slack user's "first_name" parameter with " WFH" appended to it. If the first name is an empty string, the "name" parameter will be used as a backup.
 
 # Dependencies
 
@@ -15,13 +15,10 @@ One the bot is deployed
 
 # Setup 
  
-1) Download dependencies
-  - ```npm i```
+1) Download node dependencies
+  - ```npm run install-all-node-modules```  <- A common paradigm of serverless applications is to have separate node_modules in each lambda, as well as in each layer, and your test directory or top level directory for local development. This command installs node_modules in each directory as necessary. 
+  
   - ```npm i -g serverless```
-
-2) copy config files
-  - ```cp serverless.env.example.yml serverless.env.yml```
-  - ```cp test/serverless.env-test.example.yml test/serverless.env-test.yml```
   
 ## Setting up google calendar & authentication
 
@@ -34,9 +31,7 @@ One the bot is deployed
 
   - Once you download the credentials.json, copy the Client ID, secret, and projectId/quickstartId into both the serverless.env.yml and serverless.env-test.yml files (an automated script for that part would be hepful)
 
-  - then, 
-  run ```npm run generate-google-token``` 
-  go to the link provided and enter the code into the command prompt.
+  - then, run ```npm run generate-google-token``` and go to the link provided. Enter the code from the link into the command prompt.
   
 ## Setting up the slack bot via Slack App
 5) Go to the [slack apps home page](https://api.slack.com/apps) and click "create app"
@@ -47,10 +42,29 @@ One the bot is deployed
   - chat:write:bot
 8) Naviagate up to "install app in workspace" to install the app in your workspace, which will give your bot user an API token.
 9) copy the "Bot User OAuth Access Token" to your serverless.env.yml & serverless.test-env.yml files.
+10) **This takes place after deployment** 
+- After deployment you must subscribe your work-from-home listener lambda to reaction events via your slack app. 
+- [Head back to your slack app](https://api.slack.com/apps) and navigate to event subscriptions.
+- Subscribe to reaction events, and past the url of your work-from-home listener post endpoint in the provided form. This will send a "challenge" post to the lambda, which will respond back with the challenge parameter.
+
+## Setting up Environment Files
+- The "create-env-file" will create each environment file for you, and will query slack for your slack bot and slack channel IDs by name, and in the case of your test file it will query for your test user's first name and id as well.
+- You should use a different serverless.env file for each environment: local, test, dev, staging, prod.
+- The "create-env-file" script will ask you for each variable as necessary, and generate the file at the path specified by the "-p" flag.
+- To generate your local development serverless.env file, run ```npm run create-env-file -- -p serverless.env-local.yml```
+- Alternatively you can copy the serverless.env.example.yml and manually fill out the variables. If you choose to do this you will need to determine the slack IDs of your slack channel, bot user, and test user, which requires some querying. Slack provides some useful interfaces for this: https://api.slack.com/methods/users.list/test https://api.slack.com/methods/channels.list/test 
 
 ## Run tests
-- ```npm test```
-- If all pass, you're good to go
+- Generate yout test serverless.env file: ``` npm run create-env-file -- -p serverless.env-test.yml``` (stage should be "LOCAL" which is the default)
+- Alternatively, you can copy serverless.env-test.example.yml and manually fill out the variables.
+- then run ```npm test```
+- If all pass, you're good to proceed to deployment
+
+# Deployment
+- Generate your respective dev/staging/prod environment files with ```npm run create-env-file -- -p {filename}```
+- deploy dev: ```sls deploy -p serverless.env-dev.yml```
+- deploy staging: ```sls deploy -p serverless.env-staging.yml```
+- deploy production: ```sls deploy -p serverless.env-prod.yml```
 
 ## Local development: 
 
@@ -58,9 +72,9 @@ One the bot is deployed
   - ```docker run -p 8000:8000 amazon/dynamodb-local```
   - ```npm run generate-tables```
 2) Locally running the api:
-  - ```sls offline```
+  - ```sls offline -p serverless.env-local.yml```
 3) invoking a function:
-  -  ```sls invoke -n {function name}```
+  -  ```sls invoke -n {function name} -p serverless.env-local.yml``` <- need to make sure this works and add more local development commands. 
 
 
 ## AWS Roles and permissions
@@ -90,20 +104,42 @@ One the bot is deployed
   
 # Testing 
 
+- Before you can test slack integrations, you must
+1) have your slack bot set up and 
+2) Create a severless.env-test.yml env file in the test directory with a slack user's email, first name, and slack ID.
+
+- Before you can test google calendar integration, you must
+1) have your google calendar ID and
+2) have your google authentication set up and inserted into the serverless.env-test.yml
+
+## Test Commands
 - All tests: ```npm test```  
+- Unit tests: ```npm run test-unit```
+- AWS controller unit test: ```npm run test-aws```
 - Integration tests: ```npm run test-integration```
-- unit tests: ```npm run test-unit```
-- test handlers: ```npm run test-handlers```
+- Calendar integration tests: ```npm run test-calendar```
+- Slack integration tests: ```npm run test-slack```
+- Handler integration tests: ```npm run test-handlers```
+- Controller integration tests: ```npm run test-controllers```
 
+# Caveats
+1) The bot will invite users to work-from-home events based on their slack emails.
+2) The google user authenticated for the wfh bot should have write access to the calendar in question
+3) All users that could potentially be invited to a work from home event on the work from home calendar should have read access on that calendar as well. 
+4) When posting work-from-home events, the bot will use the first name of the user, but if that does not exist it will default to "real_name".
 
-# Current known bugs/issues
+# Current known bugs/issues and necessary improvements
 
 1) Currently, if a user reacts to a previous day's message, it will add/delete an event for the current date. Not the date of the message.
 2) Race condition between adding/removing a reaction. Adding a reaction and then deleting it fires off two different instances of the listener lambda. This leaves the potential for the deletion lambda to trigger first, and the addition lambda to be fired second, leaving the event on the calendar.
 3) While there is currently some code for adding work-from-home events on a specific date, it is not ready or tested.
-4) It should not be necessary to run the "createTables" script for local development and tests. serverless-dyanmodb-local should take care of that but I haven't yet figured out how that works. 
-5) The bot does not yet post a message on a scheduled basis. The serverless file needs a cloudwatch event.
-
+4) Requiring the entire AWS-sdk is cumbersome and delays lambda cold starts. The opt layer should only require specific services. Haven't gotten that to work yet. 
+5) It should not be necessary to run the "createTables" script for local development and tests. serverless-dyanmodb-local should take care of that but I haven't yet figured out how that works. 
+6) The bot does not yet post a message on a scheduled basis. The serverless file needs a cloudwatch event.
+7) Many aspects of this should be parameterized. E.g., the message posted, the emoji used for declaring a work from home event, and the time of day that the message should be posted. 
+8) At the moment, to determine the correct slack channel ID and your bot's user ID you must call the slack listUsers ad listChannels API and search for the correct user manually. This should be scripted.
+9) The google credentials.json file is contructed from environment variables based on the original file downloaded from the google authentication setup. The variables in this file may drift over time if Google makes any changes to that file.
+10) Acceptance tests are badly needed. 
 
 
 
