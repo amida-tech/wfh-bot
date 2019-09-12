@@ -1,6 +1,5 @@
 "use strict";
 const path = require('path');
-console.log(process.env.LAYER_PATH)
 const layerPath = process.env.LAYER_PATH;
 const uuidv4 = require('uuidv4').default;
 const AWSController = require(path.join(layerPath,'/aws/controller'));
@@ -23,7 +22,6 @@ const putInMessagesTable = async({ts, channel, itemUser}) => {
       UUID: { S: uuidv4() }
     }
   }
-  console.log(dynamodbConfig)
   return await awsController.dynamodb.putItem(req);
 }
 
@@ -32,18 +30,7 @@ const postWFHDailyMessage = async (message) => {
 }
 
 
-const getMessageByKey = async (timeStamp, itemUser) => {
-  return await awsController.dynamodb.getItem({
-    TableName: messagesTable,
-    Key: {
-      TIMESTAMP: { S: timeStamp },
-      ITEM_USER: { S: itemUser }
-    }
-  });
-}
-
 module.exports = {
   putInMessagesTable,
   postWFHDailyMessage,
-  getMessageByKey,
 }

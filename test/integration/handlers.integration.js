@@ -64,7 +64,7 @@ describe('Daily Message Handler', () => {
 
     expect(body.timeStamp).to.exist;
 
-    let item = await wfhController.getMessageByKey(body.timeStamp, body.user);
+    let item = await wfhController.getMessageByKey(body.user, body.timeStamp);
       
     expect(get(item, 'CHANNEL.S')).to.equal(slackWFHChannel);
     expect(get(item, 'TIMESTAMP.S')).to.equal(body.timeStamp);

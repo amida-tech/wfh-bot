@@ -8,6 +8,7 @@ const { dynamodbConfig } = require('./awsConfig');
 const {
   getStartAndEndOfDateDate,
   getStartAndEndOfTodayDate,
+  slackTimeStampToDate
 } = require(path.join(layerPath,'/time'));
 const awsController = new AWSController({
   dynamodb: dynamodbConfig
@@ -28,17 +29,6 @@ const hasWFHEvent = async ({email, date}) => {
     return false;
   });
   return !(userEvents.length == 0);
-}
-
-const wfhMessageExists = async (itemUser, timestamp, channel) => {
-  let req = {
-    TableName: messagesTable,
-    Key: {
-      TIMESTAMP: {S: timestamp},
-      ITEM_USER: {S: itemUser}
-    }
-  }
-  return !!(await awsController.dynamodb.getItem(req));
 }
 
 const addToWFHCal = async (slackId, date) => {
@@ -106,13 +96,12 @@ const removeFromWFHCal = async (slackId, date) => {
     }
     
   } catch(err) {
-    console.error(err);
     throw new Error(err);
   }
 }
 
 
-const getMessageByKey = async (timeStamp, itemUser) => {
+const getMessageByKey = async (itemUser, timeStamp) => {
   return await awsController.dynamodb.getItem({
     TableName: messagesTable,
     Key: {
@@ -122,10 +111,17 @@ const getMessageByKey = async (timeStamp, itemUser) => {
   });
 }
 
+const isCorrectDate = (message, date) => {
+  const { start } = date ? getStartAndEndOfDateDate(date) : getStartAndEndOfTodayDate()
+  const messageTimeStamp = message['TIMESTAMP'].S;
+  const messageDate = slackTimeStampToDate(messageTimeStamp);
+  return messageDate === start;
+}
+
 module.exports = {
   addToWFHCal,
   removeFromWFHCal,
   getMessageByKey,
-  wfhMessageExists,
-  hasWFHEvent
+  hasWFHEvent,
+  isCorrectDate
 }

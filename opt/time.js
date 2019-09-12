@@ -38,11 +38,16 @@ const getStartAndEndOfDateDate = date => {
   })
 }
 
+const slackTimeStampToDate = ts => {
+  return moment.unix(ts).format("YYYY-MM-DD");
+}
+
 module.exports = {
   moment,
   getStartAndEndOfDateDateTime,
   getStartAndEndOfTodayDateTime,
   getStartAndEndOfTodayDate,
   getStartAndEndOfDateDate,
-  validateDate
+  validateDate,
+  slackTimeStampToDate
 }

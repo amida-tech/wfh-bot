@@ -13,6 +13,7 @@
     "test-handlers": "./node_modules/.bin/_mocha test/integration/handlers.integration.js -t 10000",
     "test-slack": "./node_modules/.bin/_mocha test/integration/slack.integration.js -t 10000",
     "test-aws": "./node_modules/.bin/_mocha test/unit/awsController.unit.js -t 10000",
+    "test-time": "./node_modules/.bin/_mocha test/unit/time.unit.js -t 10000",
     "generate-google-token": "node local_util/generateGoogleToken.js",
     "generate-tables": "node local_util/generateTables.js ",
     "install-all-node-modules": "npm i && cd opt && npm i && cd ../handlers/wfhListener && npm i && cd ../postDailyWFHMessage && npm i",
@@ -33,10 +34,12 @@
     "chai-as-promised": "^7.1.1",
     "env-yaml": "^0.1.2",
     "mocha": "^6.2.0",
+    "moment-timezone": "^0.5.26",
     "path": "^0.12.7",
     "serverless-dynamodb-local": "^0.2.38",
     "serverless-offline": "^5.10.1",
     "serverless-pseudo-parameters": "^2.4.0",
+    "terminal-kit": "^1.31.2",
     "yaml": "^1.6.0",
     "yargs": "^14.0.0"
   }

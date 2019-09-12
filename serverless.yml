@@ -74,8 +74,6 @@ functions:
       individually: true
       exclude:
         - '**'
-        - "**/**/package-lock.json"
-        - "**/**/package.json"
       include:
         - handlers/wfhListener/**
     layers:
@@ -85,6 +83,7 @@ functions:
     handler: handlers/postDailyWFHMessage/index.handler
     events:
       - http: get /postMessage
+      - schedule: cron(0 10 ? * MON-FRI *)
     package:
       individually: true
       exclude:

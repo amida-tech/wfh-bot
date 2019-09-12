@@ -33,12 +33,22 @@ module.exports.handler = async (event, context) => {
       const wfhAdded = eventType === reactionAddedEvent && reaction === houseReaction;
       const wfhRemoved = eventType === reactionRemovedEvent && reaction === houseReaction;
       
-      const messageExists = await controller.wfhMessageExists(itemUser, timestamp);
-
-      if(!messageExists) {
+      const message = await controller.getMessageByKey(itemUser, timestamp);
+      
+      if(!message) {
         response.statusCode = 400;
         response.body = JSON.stringify({
           message: 'Message item is not from WFH slack bot'
+        });
+        return response;
+      }
+
+      const correctDate = await controller.isCorrectDate(message);
+
+      if(!correctDate) {
+        response.statusCode = 400;
+        response.body = JSON.stringify({
+          message: 'Message date is not same as event date'
         });
         return response;
       }

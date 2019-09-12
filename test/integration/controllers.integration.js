@@ -1,16 +1,22 @@
 require('env-yaml').config({path: __dirname + '/../serverless.env-test.yml'});
 
+const moment = require('moment-timezone');
 const range = require('lodash/range');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { messagesTableSchema } = require('../../local_util/tableSchema');
-const { setUpTablesAndCalendar, deleteTables, clearEventsOneDay} = require('../test-helper');
+const { 
+  setUpTablesAndCalendar,
+  deleteTables,
+  clearEventsOneDay,
+} = require('../test-helper');
 
 const { 
   addToWFHCal,
   removeFromWFHCal,
-  wfhMessageExists,
-  hasWFHEvent
+  hasWFHEvent,
+  getMessageByKey,
+  isCorrectDate
 } = require('../../handlers/wfhListener/controller');
 //TODO: write tests for daily message controller
 const { addToCal, listEvents } = require('../../opt/google/calendar');
@@ -139,9 +145,47 @@ describe('Controller' , async () => {
       }
     });
 
-    let res = await wfhMessageExists(itemUser, timeStamp);
-
-    expect(res).to.be.true;
+    let res = await getMessageByKey(itemUser, timeStamp);
+    expect(res).to.exist;
   });
+
+  it('should respond true when the message is today', async () => {
+    let itemUser = 'ABCDE';
+    let today = moment.tz('America/New_York').startOf('Day');
+    let timeStamp = today.unix();
+    let todayDate = today.format('YYYY-MM-DD');
+    let timeStampKey = String(timeStamp) + ".000500";
+    await awsController.dynamodb.putItem({
+      TableName: messagesTableSchema.TableName,
+      Item: {
+        ITEM_USER: {S: itemUser},
+        TIMESTAMP: {S: timeStampKey},
+      }
+    });
+
+    let message = await getMessageByKey(itemUser,timeStampKey);
+    let result = isCorrectDate(message);
+    expect(result).to.be.true;
+  });
+
+  it('should respond false when the message is not today', async () => {
+    let itemUser = 'ABCDE';
+    let today = moment.tz('America/New_York').startOf('Day');
+    let timeStampToday = today.unix();
+    let notTodayTimestamp = moment.unix(timeStampToday - 172800);
+    let timeStampKey = String(notTodayTimestamp) + ".000500";
+    await awsController.dynamodb.putItem({
+      TableName: messagesTableSchema.TableName,
+      Item: {
+        ITEM_USER: {S: itemUser},
+        TIMESTAMP: {S: timeStampKey},
+      }
+    });
+
+    let message = await getMessageByKey(itemUser,timeStampKey);
+    let result = isCorrectDate(message);
+    expect(result).to.be.false;
+  });
+
   
 });

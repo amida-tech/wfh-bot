@@ -130,16 +130,14 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 
 # Current known bugs/issues and necessary improvements
 
-1) Currently, if a user reacts to a previous day's message, it will add/delete an event for the current date. Not the date of the message.
+1) Deployment currently adds some files from the top level directory into each lambda. only the handler functions should be deployed to each lambda.
 2) Race condition between adding/removing a reaction. Adding a reaction and then deleting it fires off two different instances of the listener lambda. This leaves the potential for the deletion lambda to trigger first, and the addition lambda to be fired second, leaving the event on the calendar.
 3) While there is currently some code for adding work-from-home events on a specific date, it is not ready or tested.
 4) Requiring the entire AWS-sdk is cumbersome and delays lambda cold starts. The opt layer should only require specific services. Haven't gotten that to work yet. 
 5) It should not be necessary to run the "createTables" script for local development and tests. serverless-dyanmodb-local should take care of that but I haven't yet figured out how that works. 
-6) The bot does not yet post a message on a scheduled basis. The serverless file needs a cloudwatch event.
-7) Many aspects of this should be parameterized. E.g., the message posted, the emoji used for declaring a work from home event, and the time of day that the message should be posted. 
-8) At the moment, to determine the correct slack channel ID and your bot's user ID you must call the slack listUsers ad listChannels API and search for the correct user manually. This should be scripted.
-9) The google credentials.json file is contructed from environment variables based on the original file downloaded from the google authentication setup. The variables in this file may drift over time if Google makes any changes to that file.
-10) Acceptance tests are badly needed. 
+6) Many aspects of this should be parameterized. E.g., the message posted, the emoji used for declaring a work from home event, and the time of day that the message should be posted. 
+7) The google credentials.json file is contructed from environment variables based on the original file downloaded from the google authentication setup. The variables in this file may drift over time if Google makes any changes to that file.
+8) Acceptance tests are badly needed. 
 
 
 
