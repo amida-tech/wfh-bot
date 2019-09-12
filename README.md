@@ -4,7 +4,7 @@ This is a serverless slack bot that can be used by teams to place work from home
 
 # Usage
 
-Once the bot is deployed, it will post a message to the specified slack channel every morning at the specified time. To add an event to the designated "work from home" calendar, you can reply to the message with a "house" emoji. Deleting the emoji will also remove the event from the calendar. The event details posted to the calendar will be the slack user's "first_name" parameter with " WFH" appended to it. If the first name is an empty string, the "name" parameter will be used as a backup.
+Once the bot is deployed, it will post a message to the specified slack channel every morning at the specified time. To add an event to the designated "work from home" calendar, you can reply to the message with a "house" emoji. Deleting the emoji will also remove the event from the calendar. The event details posted to the calendar will be the slack user's "first_name" parameter with " WFH" appended to it. If the first name is an empty string, the "name" parameter will be used as a backup. Reaction adds/removals to previous day's "work from home" messages will have no effect on the current day's calendar events. 
 
 # Dependencies
 
