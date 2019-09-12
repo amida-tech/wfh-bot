@@ -54,6 +54,17 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 - To generate your local development serverless.env file, run ```npm run create-env-file -- -p serverless.env-local.yml```
 - Alternatively you can copy the serverless.env.example.yml and manually fill out the variables. If you choose to do this you will need to determine the slack IDs of your slack channel, bot user, and test user, which requires some querying. Slack provides some useful interfaces for this: https://api.slack.com/methods/users.list/test https://api.slack.com/methods/channels.list/test 
 
+## Local development: 
+
+1) local dynamodb: 
+  - ```docker run -p 8000:8000 amazon/dynamodb-local```
+  - ```npm run generate-tables```
+2) Locally running the api:
+  - ```sls offline -p serverless.env-local.yml```
+3) invoking a function:
+  -  ```sls invoke -n {function name} -p serverless.env-local.yml``` <- need to make sure this works and add more local development commands. 
+
+
 ## Run tests
 - Generate yout test serverless.env file: ``` npm run create-env-file -- -p serverless.env-test.yml``` (stage should be "LOCAL" which is the default)
 - Alternatively, you can copy serverless.env-test.example.yml and manually fill out the variables.
@@ -66,18 +77,8 @@ Once the bot is deployed, it will post a message to the specified slack channel 
 - deploy staging: ```sls deploy -p serverless.env-staging.yml```
 - deploy production: ```sls deploy -p serverless.env-prod.yml```
 
-## Local development: 
 
-1) local dynamodb: 
-  - ```docker run -p 8000:8000 amazon/dynamodb-local```
-  - ```npm run generate-tables```
-2) Locally running the api:
-  - ```sls offline -p serverless.env-local.yml```
-3) invoking a function:
-  -  ```sls invoke -n {function name} -p serverless.env-local.yml``` <- need to make sure this works and add more local development commands. 
-
-
-## AWS Roles and permissions
+## AWS Roles and permissions for deployment
 - If you don't have an AWS account, [set one up](https://aws.amazon.com/)
 - Deploying this serverless application requires several permissions, including, but not necessarily limited to:
   - iam:CreateRole
