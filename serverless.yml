@@ -1,11 +1,11 @@
 service: slack-listener 
 
 custom:
-  env-file: ./serverless.env-${self:provider.stage}.yml
+  env-file: ./serverless.env-dev.yml
   dynamodb:
   # If you only want to use DynamoDB Local in some stages, declare them here
     stages:
-      - local
+      - dev
     start:
       port: 8000
       inMemory: true
