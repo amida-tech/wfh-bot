@@ -16,8 +16,9 @@ const awsController = new AWSController({
 const messagesTable = process.env.MESSAGES_TABLE;
 const gCalIdWFH = process.env.WFH_GCAL_ID;
 
-const hasWFHEvent = async ({email, date}) => {
+const hasWFHEvent = async ({date, email}) => {
   let events = await listEvents(gCalIdWFH, date);
+  console.error('inside wfh event ', date, '|', events, 'EMAILLLL', email)
   let userEvents = events.filter(event => {
     if(event.attendees) {
       let hasAttendee = event.attendees.some(attendee => {
@@ -34,11 +35,11 @@ const hasWFHEvent = async ({email, date}) => {
 const addToWFHCal = async (slackId, date) => {
 
   const { start, end } = date ? getStartAndEndOfDateDate(date) : getStartAndEndOfTodayDate()
-  
+  console.error('starttttt', start, 'ENDDDDDDD', end)
   const { email, name, first_name } = await getInfoBySlackId(slackId);  
   const summary = first_name === '' ? name + ' WFH' : first_name + ' WFH';
   const attendees = [{email}];
-  let hasEvent = await hasWFHEvent({email, date});
+  let hasEvent = await hasWFHEvent({date: start, email});
   if(!hasEvent) {
     const res = await addToCal({calendarId: gCalIdWFH, attendees, summary, start, end});
   
