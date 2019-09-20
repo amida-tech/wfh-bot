@@ -17,6 +17,8 @@ const messagesTable = process.env.MESSAGES_TABLE;
 const gCalIdWFH = process.env.WFH_GCAL_ID;
 
 const hasWFHEvent = async ({date, email}) => {
+
+  console.log('++++++++++', date, email)
   let events = await listEvents(gCalIdWFH, date);
   console.error('inside wfh event ', date, '|', events, 'EMAILLLL', email)
   let userEvents = events.filter(event => {
@@ -29,6 +31,7 @@ const hasWFHEvent = async ({date, email}) => {
 
     return false;
   });
+  console.log('userevents^^^^', userEvents.length)
   return !(userEvents.length == 0);
 }
 
@@ -65,41 +68,41 @@ const addToWFHCal = async (slackId, date) => {
 
 }
 
-const removeFromWFHCal = async (slackId, date) => {
-  const { start } = date ? getStartAndEndOfDateDate(date) : getStartAndEndOfTodayDate()
+// const removeFromWFHCal = async (slackId, date) => {
+//   const { start } = date ? getStartAndEndOfDateDate(date) : getStartAndEndOfTodayDate()
 
-  try {
-    const { email } = await getInfoBySlackId(slackId);  
+//   try {
+//     const { email } = await getInfoBySlackId(slackId);  
   
-    let events = await listEvents(gCalIdWFH, date);
-    let userEvents = events.filter(event => {
-      if(event.attendees) {
-        let hasAttendee = event.attendees.some(attendee => {
-          return attendee.email == email
-        });
-        return hasAttendee;
-      }
-      return false;
-    });
-    let removals = await Promise.all(userEvents.map( async event => {
-      let eventId = event.id;
-      if(eventId) {
-        return await removeFromCal({calendarId: gCalIdWFH, eventId});
-      }
-    }));
-    if(removals.every(removal => !!removal)){
-      return true;
-    } else {
-      throw new Error({
-        msg: "not all removals were a success",
-        data: removals
-      })
-    }
+//     let events = await listEvents(gCalIdWFH, date);
+//     let userEvents = events.filter(event => {
+//       if(event.attendees) {
+//         let hasAttendee = event.attendees.some(attendee => {
+//           return attendee.email == email
+//         });
+//         return hasAttendee;
+//       }
+//       return false;
+//     });
+//     let removals = await Promise.all(userEvents.map( async event => {
+//       let eventId = event.id;
+//       if(eventId) {
+//         return await removeFromCal({calendarId: gCalIdWFH, eventId});
+//       }
+//     }));
+//     if(removals.every(removal => !!removal)){
+//       return true;
+//     } else {
+//       throw new Error({
+//         msg: "not all removals were a success",
+//         data: removals
+//       })
+//     }
     
-  } catch(err) {
-    throw new Error(err);
-  }
-}
+//   } catch(err) {
+//     throw new Error(err);
+//   }
+// }
 
 
 const getMessageByKey = async (itemUser, timeStamp) => {
@@ -121,7 +124,7 @@ const isCorrectDate = (message, date) => {
 
 module.exports = {
   addToWFHCal,
-  removeFromWFHCal,
+  // removeFromWFHCal,
   getMessageByKey,
   hasWFHEvent,
   isCorrectDate

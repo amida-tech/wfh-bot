@@ -5,15 +5,15 @@ const range = require('lodash/range');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { messagesTableSchema } = require('../../local_util/tableSchema');
-const { 
-  setUpTablesAndCalendar,
-  deleteTables,
-  clearEventsOneDay,
-} = require('../test-helper');
+// const { 
+//   // setUpTablesAndCalendar,
+//   // deleteTables,
+//   // clearEventsOneDay,
+// } = require('../test-helper');
 
 const { 
   addToWFHCal,
-  removeFromWFHCal,
+  // removeFromWFHCal,
   hasWFHEvent,
   getMessageByKey,
   isCorrectDate
@@ -43,20 +43,20 @@ const { expect } = chai;
 
 describe('Controller' , async () => {
 
-  beforeEach(async () => {
-    try{
-      await setUpTablesAndCalendar();
-    } catch(err){
-      console.log(err)
-    }
-  });
+  // beforeEach(async () => {
+  //   try{
+  //     await setUpTablesAndCalendar();
+  //   } catch(err){
+  //     console.log(err)
+  //   }
+  // });
 
-  after(async () => {
-    try{
-      await deleteTables();
-    } catch(err) {
-    }
-  })
+  // after(async () => {
+  //   try{
+  //     await deleteTables();
+  //   } catch(err) {
+  //   }
+  // })
 
   const testCalId = process.env.WFH_GCAL_ID;
 
@@ -88,9 +88,9 @@ describe('Controller' , async () => {
     
     expect(eventsOnCalendar.length).to.be.greaterThan(2);
 
-    let deletedEvents = await clearEventsOneDay(testCalId);
+    // let deletedEvents = await clearEventsOneDay(testCalId);
 
-    expect(deletedEvents.length).to.be.greaterThan(2);
+    // expect(deletedEvents.length).to.be.greaterThan(2);
 
     let newListEvents = await listEvents(testCalId);
 
@@ -128,7 +128,7 @@ describe('Controller' , async () => {
 
   it('Removes WFH event in calendar/table for given day if event exists' , async () => {
     await addToWFHCal(slackUserId);
-    await removeFromWFHCal(slackUserId); 
+    // await removeFromWFHCal(slackUserId); 
     let res = await hasWFHEvent({slackUserEmail});
     expect(res).to.be.false;
   })

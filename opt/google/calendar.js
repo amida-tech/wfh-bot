@@ -16,7 +16,9 @@ const listEvents = async(gCalId, date) => {
   };
 
   const auth = getAuth();
+
   const {startDateTime, endDateTime} = date ? getStartAndEndOfDateDateTime(date) : getStartAndEndOfTodayDateTime();
+  console.error("inside listEvents, startDateTime:", startDateTime, "endDateTime:", endDateTime)
   const maxResults = 100;
   const calendar = google.calendar({ version: 'v3', auth });
   
@@ -30,6 +32,7 @@ const listEvents = async(gCalId, date) => {
       orderBy: 'startTime',
     });
     if(has(res, 'data.items')) {
+      console.error("Items returned from list calendar events", res.data.items)
       return res.data.items
     } else {
       return []

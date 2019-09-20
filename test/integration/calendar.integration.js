@@ -9,17 +9,21 @@ const { addToCal, removeFromCal } = require('../../opt/google/calendar');
 
 const testCalId = process.env.WFH_GCAL_ID;
 const {start, end} = getStartAndEndOfTodayDate();
+// TODO investigate weather these values are going to work
 let eventId;
 
 describe('Add to cal', () => {
   const slackUserEmail = process.env.SLACK_USER_EMAIL;
+  console.log('addd tooo calllendar ------')
   it('Successfully adds event to calendar today', async () => {
     let event = await addToCal({
       calendarId: testCalId,  
       attendees: [ slackUserEmail ], 
       summary: 'TEST EVENT ',
-      start,
-      end
+      start: "2019-09-16",
+      end: "2019-09-16"
+      // start,
+      // end
     });
     expect(event).to.exist
     expect(event).to.not.be.empty;

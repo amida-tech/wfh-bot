@@ -25,19 +25,19 @@ const message = "Hi! this is the work from home bot. You can place yourself on t
 
 
 describe('Daily Message Handler', () => {
-  before(async () => {
-    try{
-      await setUpTablesAndCalendar();
-    } catch(err){
-      console.log(err)
-    }
-  })
-  after(async () => {
-    try{
-      await deleteTables();
-    } catch(err) {
-    }
-  })
+  // before(async () => {
+  //   try{
+  //     await setUpTablesAndCalendar();
+  //   } catch(err){
+  //     console.log(err)
+  //   }
+  // })
+  // after(async () => {
+  //   try{
+  //     await deleteTables();
+  //   } catch(err) {
+  //   }
+  // })
 
   it('responds corrects to challenge request', async () => {
     let event = {
@@ -74,20 +74,20 @@ describe('Daily Message Handler', () => {
 
 describe('WFH Listener', async () => {
 
-  before(async () => {
-    try{
-      await setUpTablesAndCalendar();
-    } catch(err){
-      console.error(err)
-    }
-  })
-  after(async () => {
-    try{
-      await deleteTables();
-    } catch(err) {
+  // before(async () => {
+  //   try{
+  //     await setUpTablesAndCalendar();
+  //   } catch(err){
+  //     console.error(err)
+  //   }
+  // })
+  // after(async () => {
+  //   try{
+  //     await deleteTables();
+  //   } catch(err) {
       
-    }
-  });
+  //   }
+  // });
   
  
   let slackReactionHouse;
@@ -119,24 +119,24 @@ describe('WFH Listener', async () => {
     expect(hasWFHEventBool).to.be.true;
   });
 
-  it('Removes wfh event if exists in calendar', async () => {
-    try{
-      await wfhController.addToWFHCal(testUserId);
-    } catch(err){
-      // There might be an event from a previous test. 
-      // If not, make one.
-    } 
+  // it('Removes wfh event if exists in calendar', async () => {
+  //   try{
+  //     await wfhController.addToWFHCal(testUserId);
+  //   } catch(err){
+  //     // There might be an event from a previous test. 
+  //     // If not, make one.
+  //   } 
     
-    slackReactionHouse.event.type = 'reaction_removed'
-    let event = {
-      body: JSON.stringify(slackReactionHouse)
-    }
-    let wfhListenerResult = await wfhListenerHandler(event);
-    expect(wfhListenerResult.statusCode).to.equal(200);
-    let { email } = await slack.getInfoBySlackId(testUserId);
-    let hasWFHEventBool = await wfhController.hasWFHEvent({email});
-    expect(hasWFHEventBool).to.be.false;
-  });
+  //   slackReactionHouse.event.type = 'reaction_removed'
+  //   let event = {
+  //     body: JSON.stringify(slackReactionHouse)
+  //   }
+  //   let wfhListenerResult = await wfhListenerHandler(event);
+  //   expect(wfhListenerResult.statusCode).to.equal(200);
+  //   let { email } = await slack.getInfoBySlackId(testUserId);
+  //   let hasWFHEventBool = await wfhController.hasWFHEvent({email});
+  //   expect(hasWFHEventBool).to.be.false;
+  // });
 
   it('throws 400 if message does not exist', async () => {
     slackReactionHouse.event.item.ts = '1234567';
