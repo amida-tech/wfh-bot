@@ -34,7 +34,8 @@ module.exports.handler = async (event, context) => {
       const wfhRemoved = eventType === reactionRemovedEvent && reaction === houseReaction;
       
       const message = await controller.getMessageByKey(itemUser, timestamp);
-      
+      console.error("Inside wfhListener index.js", "event.body:", body)
+
       if(!message) {
         response.statusCode = 400;
         response.body = JSON.stringify({
@@ -55,6 +56,7 @@ module.exports.handler = async (event, context) => {
 
       if(wfhAdded) {
         try {
+          console.error("WFH added")
           await controller.addToWFHCal(slackId);
         } catch(err) {
           response.statusCode = 400
@@ -64,6 +66,7 @@ module.exports.handler = async (event, context) => {
         }
       } else if(wfhRemoved) {
         try {
+          console.error("WFH removed")
           await controller.removeFromWFHCal(slackId);
         } catch(err) {
           response.statusCode = 400
