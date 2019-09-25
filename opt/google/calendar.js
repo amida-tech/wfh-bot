@@ -16,16 +16,16 @@ const listEvents = async(gCalId, date) => {
   };
 
   const auth = getAuth();
-  const {start, end } = date ? getStartAndEndOfDateDateTime(date) : getStartAndEndOfTodayDateTime();
-  console.error("inside listEvents, startDateTime:", start, "endDateTime:", end)
+  const {startDateTime, endDateTime } = date ? getStartAndEndOfDateDateTime(date) : getStartAndEndOfTodayDateTime();
+  console.error("inside listEvents, startDateTime:", startDateTime, "endDateTime:", endDateTime)
   const maxResults = 100;
   const calendar = google.calendar({ version: 'v3', auth });
   
   try {
     let res =  await calendar.events.list({
       calendarId: gCalId,
-      timeMin: start,
-      timeMax: end,
+      timeMin: startDateTime,
+      timeMax: endDateTime,
       maxResults: maxResults,
       singleEvents: true,
       orderBy: 'startTime',
