@@ -39,6 +39,7 @@ module.exports.handler = async (event, context) => {
       if(!message) {
         response.statusCode = 400;
         response.body = JSON.stringify({
+          // TODO: These messages are not shown in cloudwatch logs because we do not console.error them
           message: 'Message item is not from WFH slack bot'
         });
         return response;
