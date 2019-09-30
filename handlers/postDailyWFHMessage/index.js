@@ -13,6 +13,7 @@ module.exports.handler = async () => {
   try {
     let res = await controller.postWFHDailyMessage(messageText);
     if(res.ok) {
+      console.error('Success PostDailyMessageWFH', res)
       let {ts, channel, message} = res
       await controller.postReactionToWFHDailyMessage(ts)
       await controller.putInMessagesTable({ts, channel, itemUser: message.user});
