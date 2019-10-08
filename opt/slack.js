@@ -116,7 +116,7 @@ const postReaction = async (channel, ts, emoji) => {
     
     let res = await axios.get(url)
     if(res.status === 200 && res.data) {
-      console.error("Reaction made,", res.data)
+      console.error(`${emoji} Reaction made`, res.data)
       return res.data;
     } else {
       throw new Error(res);

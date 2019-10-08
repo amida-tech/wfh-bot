@@ -17,9 +17,7 @@ const messagesTable = process.env.MESSAGES_TABLE;
 const gCalIdWFH = process.env.WFH_GCAL_ID;
 
 const hasWFHEvent = async ({email, date}) => {
-  console.log('Inside hasWFHEvent => ', 'Email', email, 'Date: ', date)
   let events = await listEvents(gCalIdWFH, date);
-  console.log('ListEvents inside hasWFHEvent => ', events)
   let userEvents = events.filter(event => {
     if(event.attendees) {
       let hasAttendee = event.attendees.some(attendee => {
@@ -34,18 +32,13 @@ const hasWFHEvent = async ({email, date}) => {
 }
 
 const addToWFHCal = async (slackId, date) => {
-  console.log('inside addToWFHCal => date', date)
   const { start, end } = date ? getStartAndEndOfDateDate(date) : getStartAndEndOfTodayDate()
-  console.log('inside addToWFHCal => Start:' , start, 'End: ', end, 'date: ', date)
   const { email, name, first_name } = await getInfoBySlackId(slackId);  
   const summary = first_name === '' ? name + ' WFH' : first_name + ' WFH';
   const attendees = [{email}];
   let hasEvent = await hasWFHEvent({email, date});
-  console.log('hasEvent inside addToWFHCal => ', hasEvent)
   if(!hasEvent) {
-    console.log('hasEvent inside addToWFHCal if(!hasEvent) => ', hasEvent)
     const res = await addToCal({calendarId: gCalIdWFH, attendees, summary, start, end});
-    console.log('Inside addToWFHCal res', res)
     if(res.status === 'confirmed') {
       console.log(`event created for ${email} with event ID: ${res.id}`)
       return res;
@@ -85,7 +78,6 @@ const removeFromWFHCal = async (slackId, date) => {
       return false;
     });
     let removals = await Promise.all(userEvents.map( async event => {
-      console.error("Inside removeFromWFHCal", "removing this event:", event)
       let eventId = event.id;
       if(eventId) {
         return await removeFromCal({calendarId: gCalIdWFH, eventId});

@@ -17,7 +17,6 @@ const listEvents = async(gCalId, date) => {
 
   const auth = getAuth();
   const {startDateTime, endDateTime } = date ? getStartAndEndOfDateDateTime(date) : getStartAndEndOfTodayDateTime();
-  console.error("inside listEvents, startDateTime:", startDateTime, "endDateTime:", endDateTime)
   const maxResults = 100;
   const calendar = google.calendar({ version: 'v3', auth });
   
@@ -31,7 +30,6 @@ const listEvents = async(gCalId, date) => {
       orderBy: 'startTime',
     });
     if(has(res, 'data.items')) {
-      console.error("Inside listEvents: items returned from list calendar events", res.data.items)
       return res.data.items
     } else {
       return []
@@ -85,7 +83,6 @@ const addToCal = async ({calendarId, attendees, summary, start, end}) => {
 const removeFromCal = async ({calendarId, eventId}) => {
   const auth = getAuth();
   const calendar = google.calendar({ version: 'v3', auth });
-  console.log('removeFromCal: calendarId and eventId',  calendarId, eventId)
   try {
     await new Promise((res, rej) => { 
       calendar.events.delete({
