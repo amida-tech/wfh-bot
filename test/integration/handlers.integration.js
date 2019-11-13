@@ -15,7 +15,7 @@ const { expect } = chai;
 const testUserId = process.env.SLACK_USER_ID;
 const slackWFHChannel = process.env.SLACK_WFH_CHANNEL;
 const slackBotUserId = process.env.WFH_BOT_SLACK_ID;
-const message = 'Where are you today?\n WFH / Remote :house: \n At the Office :office:'
+const message = 'Where are you today?\n WFH / Remote :house: \n At the Office :office: \n OOO :face_with_thermometer:'
 
 // TODO:
 // Messed up in making these not call the serverless-offline functions by url.

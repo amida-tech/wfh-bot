@@ -30,7 +30,8 @@ const postWFHDailyMessage = async (message) => {
 }
 const postReactionToWFHDailyMessage = async (ts) => {
   await postReaction(slackWFHChannel, ts, 'house');
-  return await postReaction(slackWFHChannel, ts, 'office');
+  await postReaction(slackWFHChannel, ts, 'office');
+  return await postReaction(slackWFHChannel, ts, 'face_with_thermometer');
 }
 
 

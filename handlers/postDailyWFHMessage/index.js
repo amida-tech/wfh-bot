@@ -1,5 +1,5 @@
 const controller = require('./controller');
-const messageText = 'Where are you today?\n WFH / Remote :house: \n At the Office :office:'
+const messageText = 'Where are you today?\n WFH / Remote :house: \n At the Office :office: \n OOO :face_with_thermometer:'
 
 
 module.exports.handler = async () => {

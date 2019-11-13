@@ -10,7 +10,7 @@ const testUserEmail = process.env.SLACK_USER_EMAIL;
 const testUserName = process.env.SLACK_USER_FIRST_NAME;
 const slackWFHChannel = process.env.SLACK_WFH_CHANNEL;
 const slackBotUserId = process.env.WFH_BOT_SLACK_ID;
-const message = 'Where are you today?\n At the Office :office: \n WFH / Remote :house:'
+const message = 'Where are you today?\n WFH / Remote :house: \n At the Office :office: \n OOO :face_with_thermometer:'
 
 describe('infoBySlackId integration', () => {
   it('Successfully gets slackId by email', async () => {
