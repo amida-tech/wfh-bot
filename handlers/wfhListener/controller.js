@@ -33,8 +33,8 @@ const hasWFHEvent = async ({email, date}) => {
 
 const addToWFHCal = async (slackId, date) => {
   const { start, end } = date ? getStartAndEndOfDateDate(date) : getStartAndEndOfTodayDate()
-  const { email, name, first_name } = await getInfoBySlackId(slackId);  
-  const summary = first_name === '' ? name + ' WFH' : first_name + ' WFH';
+  const { email, real_name_normalized } = await getInfoBySlackId(slackId);
+  const summary = real_name_normalized + ' WFH';
   const attendees = [{email}];
   let hasEvent = await hasWFHEvent({email, date});
   if(!hasEvent) {
@@ -50,7 +50,7 @@ const addToWFHCal = async (slackId, date) => {
     }
     throw new Error(res.message);
   } else {
-    
+
     console.error({
       msg:'WFH event already logged for this user',
       slackId,
@@ -65,8 +65,8 @@ const removeFromWFHCal = async (slackId, date) => {
   const { start } = date ? getStartAndEndOfDateDate(date) : getStartAndEndOfTodayDate()
 
   try {
-    const { email } = await getInfoBySlackId(slackId);  
-  
+    const { email } = await getInfoBySlackId(slackId);
+
     let events = await listEvents(gCalIdWFH, date);
     let userEvents = events.filter(event => {
       if(event.attendees) {
@@ -91,7 +91,7 @@ const removeFromWFHCal = async (slackId, date) => {
         data: removals
       })
     }
-    
+
   } catch(err) {
     throw new Error(err);
   }
