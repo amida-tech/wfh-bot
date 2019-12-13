@@ -1,4 +1,4 @@
-service: slack-listener 
+service: WFH-Amida
 
 custom:
   env-file: ./serverless.env-dev.yml
@@ -24,7 +24,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   # Uncoment the following two fields only if you want to apply a 
   # role/profile durind deployment. If you wish to use a profile, you
   # will need to add --profile {profile name} to each command.
@@ -121,7 +121,7 @@ layers:
   Util:
     path: opt
     compatibleRuntimes: 
-      - nodejs8.10
+      - nodejs10.x
     allowedAccounts:
       - '*' # ALL accounts!
     retain: false
